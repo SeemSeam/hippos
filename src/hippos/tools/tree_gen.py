@@ -90,6 +90,7 @@ def run_tree_gen(
     Otherwise runs repomix to get the structure.
     """
     if structure_json is None:
+        from ..repomix.fallback import build_directory_structure
         from ..repomix.runner import run_repomix_structure
         import tempfile
         with tempfile.NamedTemporaryFile(
@@ -97,7 +98,12 @@ def run_tree_gen(
         ) as tmp:
             tmp_path = Path(tmp.name)
         try:
-            structure_json = run_repomix_structure(target, tmp_path)
+            try:
+                structure_json = run_repomix_structure(target, tmp_path)
+            except FileNotFoundError:
+                if verbose:
+                    print("repomix not found in PATH; using direct directory fallback")
+                structure_json = build_directory_structure(target)
         finally:
             tmp_path.unlink(missing_ok=True)
 

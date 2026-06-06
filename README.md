@@ -86,7 +86,7 @@ Useful npm launcher overrides after npm publication:
 ```bash
 HIPPOS_NPM_PYTHON=python3.11 hippos --help
 HIPPOS_NPM_CACHE_DIR=/tmp/hippos-cache hippos .
-HIPPOS_NPM_PIP_SPEC='seemseam-hippos==0.1.7' hippos .
+HIPPOS_NPM_PIP_SPEC='seemseam-hippos==0.1.8' hippos .
 HIPPOS_NPM_LLMGATEWAY_PIP_SPEC='seemseam-llmgateway>=0.1.2' hippos .
 ```
 

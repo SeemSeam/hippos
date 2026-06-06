@@ -63,14 +63,20 @@ def select_ranked_files(
     return result, remaining, selection_details
 
 
-def load_compress_data(target: Path):
+def load_compress_data(target: Path, *, verbose: bool = False):
+    from ..repomix.fallback import read_manifest_source_files
     from ..repomix.runner import run_repomix_compress
     import tempfile
 
     with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as tmp:
         tmp_path = Path(tmp.name)
     try:
-        return run_repomix_compress(target, tmp_path)
+        try:
+            return run_repomix_compress(target, tmp_path)
+        except FileNotFoundError:
+            if verbose:
+                print("repomix not found in PATH; using direct source-file fallback")
+            return read_manifest_source_files(target)
     finally:
         tmp_path.unlink(missing_ok=True)
 

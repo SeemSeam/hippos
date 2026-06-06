@@ -44,7 +44,8 @@ def test_core_commands_registered_from_core_module():
         assert cli.commands[name].callback.__module__ == EXPECTED_MODULES[name]
 
 
-def test_index_accepts_no_llm_option(tmp_path):
+def test_index_accepts_no_llm_option(tmp_path, monkeypatch):
+    monkeypatch.setattr("hippos.repomix.runner.find_repomix", lambda: None)
     runner = CliRunner()
     init_result = runner.invoke(cli, ["init", str(tmp_path)])
     assert init_result.exit_code == 0
@@ -63,7 +64,8 @@ def test_init_accepts_hidden_target_option_alias(tmp_path):
     assert (tmp_path / ".hippos" / "config.yaml").exists()
 
 
-def test_index_accepts_hidden_target_option_alias(tmp_path):
+def test_index_accepts_hidden_target_option_alias(tmp_path, monkeypatch):
+    monkeypatch.setattr("hippos.repomix.runner.find_repomix", lambda: None)
     runner = CliRunner()
     init_result = runner.invoke(cli, ["init", str(tmp_path)])
     assert init_result.exit_code == 0
@@ -74,7 +76,8 @@ def test_index_accepts_hidden_target_option_alias(tmp_path):
     assert (tmp_path / ".hippos" / "bundle-state.json").exists()
 
 
-def test_update_runs_incremental_refresh_without_llm(tmp_path):
+def test_update_runs_incremental_refresh_without_llm(tmp_path, monkeypatch):
+    monkeypatch.setattr("hippos.repomix.runner.find_repomix", lambda: None)
     (tmp_path / "src").mkdir()
     (tmp_path / "src" / "demo.py").write_text("def hello():\n    return 'world'\n", encoding="utf-8")
 

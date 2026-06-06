@@ -107,7 +107,7 @@ def run_trimmer(
 ) -> dict[str, str]:
     """Run the trimmer on repomix compress output."""
     if compress_data is None:
-        compress_data = load_compress_data(target)
+        compress_data = load_compress_data(target, verbose=verbose)
 
     trimmed_data = trim_compress_with_ranker(
         compress_data,

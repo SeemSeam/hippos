@@ -116,6 +116,7 @@ async def phase_0_local(
 ) -> dict[str, Any]:
     """Phase 0: local extraction without LLM."""
     from ..sig_extract import run_sig_extract
+    from ...repomix.fallback import read_manifest_source_files
     from ...repomix.runner import run_repomix_compress
 
     git_changed_files = get_git_changed_files(target)
@@ -132,7 +133,12 @@ async def phase_0_local(
     ) as tmp:
         tmp_path = Path(tmp.name)
     try:
-        compress_data = run_repomix_compress(target, tmp_path)
+        try:
+            compress_data = run_repomix_compress(target, tmp_path)
+        except FileNotFoundError:
+            if verbose:
+                print("repomix not found in PATH; using direct source-file fallback")
+            compress_data = read_manifest_source_files(target, file_manifest)
     finally:
         tmp_path.unlink(missing_ok=True)
 

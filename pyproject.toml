@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "seemseam-hippos"
-version = "0.1.7"
+version = "0.1.8"
 description = "Hippos code repository indexing, navigation, and structure analysis toolkit"
 readme = "README.md"
 requires-python = ">=3.10"
