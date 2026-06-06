@@ -6,7 +6,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from hippocampus.tools.index_gen_phase1 import phase_1_impl
+from hippos.tools.index.index_gen_phase1 import phase_1_impl
 
 
 @pytest.mark.asyncio
@@ -30,11 +30,11 @@ async def test_phase1_impl_processes_files_concurrently(tmp_path: Path, monkeypa
             )()
 
     monkeypatch.setattr(
-        "hippocampus.tools.index_gen_phase1.create_llm_gateway",
+        "hippos.tools.index.index_gen_phase1.create_llm_gateway",
         lambda _config: FakeLLM(),
     )
     monkeypatch.setattr(
-        "hippocampus.llm.prompts.build_phase_1_messages",
+        "hippos.llm.prompts.build_phase_1_messages",
         lambda **kwargs: [{"role": "user", "content": kwargs["file_path"]}],
     )
 
@@ -60,7 +60,7 @@ async def test_phase1_impl_processes_files_concurrently(tmp_path: Path, monkeypa
         config=SimpleNamespace(llm=SimpleNamespace(max_concurrent=2, retry_max=1, timeout=90)),
         phase0_data=phase0_data,
         target=tmp_path,
-        output_dir=tmp_path / ".hippocampus",
+        output_dir=tmp_path / ".hippos",
         dir_tree="",
         verbose=False,
         content_hash_fn=lambda text: text,
@@ -91,11 +91,11 @@ async def test_phase1_impl_processes_uncached_unchanged_files_without_keyerror(
             )()
 
     monkeypatch.setattr(
-        "hippocampus.tools.index_gen_phase1.create_llm_gateway",
+        "hippos.tools.index.index_gen_phase1.create_llm_gateway",
         lambda _config: FakeLLM(),
     )
     monkeypatch.setattr(
-        "hippocampus.llm.prompts.build_phase_1_messages",
+        "hippos.llm.prompts.build_phase_1_messages",
         lambda **kwargs: [{"role": "user", "content": kwargs["file_path"]}],
     )
 
@@ -137,7 +137,7 @@ async def test_phase1_impl_processes_uncached_unchanged_files_without_keyerror(
         config=SimpleNamespace(llm=SimpleNamespace(max_concurrent=2, retry_max=1, timeout=90)),
         phase0_data=phase0_data,
         target=tmp_path,
-        output_dir=tmp_path / ".hippocampus",
+        output_dir=tmp_path / ".hippos",
         dir_tree="",
         verbose=False,
         content_hash_fn=lambda text: text,

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from click.testing import CliRunner
 
-from hippocampus.cli import cli
+from hippos.cli import cli
 
 
 CORE_COMMANDS = {
@@ -22,19 +22,19 @@ CORE_COMMANDS = {
 }
 
 EXPECTED_MODULES = {
-    "_generate": "hippocampus.cli.pipeline_command_builders",
-    "refresh": "hippocampus.cli.pipeline_command_builders",
-    "update": "hippocampus.cli.pipeline_command_builders",
-    "init": "hippocampus.cli.commands_project_bootstrap",
-    "sig-extract": "hippocampus.cli.commands_project_bootstrap",
-    "tree": "hippocampus.cli.commands_project_bootstrap",
-    "tree-diff": "hippocampus.cli.commands_project_bootstrap",
-    "structure-prompt": "hippocampus.cli.commands_structure_prompt",
-    "structure-prompt-all": "hippocampus.cli.commands_structure_prompt",
-    "repomap": "hippocampus.cli.pipeline_command_builders",
-    "trim": "hippocampus.cli.pipeline_command_builders",
-    "index": "hippocampus.cli.pipeline_command_builders",
-    "run": "hippocampus.cli.pipeline_command_builders",
+    "_generate": "hippos.cli.pipeline_command_builders",
+    "refresh": "hippos.cli.pipeline_command_builders",
+    "update": "hippos.cli.pipeline_command_builders",
+    "init": "hippos.cli.commands_project_bootstrap",
+    "sig-extract": "hippos.cli.commands_project_bootstrap",
+    "tree": "hippos.cli.commands_project_bootstrap",
+    "tree-diff": "hippos.cli.commands_project_bootstrap",
+    "structure-prompt": "hippos.cli.commands_structure_prompt",
+    "structure-prompt-all": "hippos.cli.commands_structure_prompt",
+    "repomap": "hippos.cli.pipeline_command_builders",
+    "trim": "hippos.cli.pipeline_command_builders",
+    "index": "hippos.cli.pipeline_command_builders",
+    "run": "hippos.cli.pipeline_command_builders",
 }
 
 
@@ -53,14 +53,14 @@ def test_index_accepts_no_llm_option(tmp_path):
         ["index", "--no-llm", str(tmp_path)],
     )
     assert result.exit_code == 0
-    assert (tmp_path / ".hippocampus" / "bundle-state.json").exists()
+    assert (tmp_path / ".hippos" / "bundle-state.json").exists()
 
 
 def test_init_accepts_hidden_target_option_alias(tmp_path):
     runner = CliRunner()
     result = runner.invoke(cli, ["init", "--target", str(tmp_path)])
     assert result.exit_code == 0
-    assert (tmp_path / ".hippocampus" / "config.yaml").exists()
+    assert (tmp_path / ".hippos" / "config.yaml").exists()
 
 
 def test_index_accepts_hidden_target_option_alias(tmp_path):
@@ -70,8 +70,8 @@ def test_index_accepts_hidden_target_option_alias(tmp_path):
 
     result = runner.invoke(cli, ["index", "--no-llm", "--target", str(tmp_path)])
     assert result.exit_code == 0
-    assert (tmp_path / ".hippocampus" / "hippocampus-index.json").exists()
-    assert (tmp_path / ".hippocampus" / "bundle-state.json").exists()
+    assert (tmp_path / ".hippos" / "hippos-index.json").exists()
+    assert (tmp_path / ".hippos" / "bundle-state.json").exists()
 
 
 def test_update_runs_incremental_refresh_without_llm(tmp_path):
@@ -85,15 +85,15 @@ def test_update_runs_incremental_refresh_without_llm(tmp_path):
     )
     assert result.exit_code == 0
 
-    out = tmp_path / ".hippocampus"
-    assert (out / "hippocampus-index.json").exists()
+    out = tmp_path / ".hippos"
+    assert (out / "hippos-index.json").exists()
     assert (out / "code-signatures.json").exists()
     assert (out / "tree.json").exists()
     assert (out / "structure-prompt-map.md").exists()
     assert (out / "structure-prompt-deep.md").exists()
     assert (out / "structure-prompt.md").exists()
     assert (out / "bundle-state.json").exists()
-    assert (out / "hippocampus-viz.html").exists()
+    assert (out / "hippos-viz.html").exists()
     assert (out / "snapshots").is_dir()
 
 

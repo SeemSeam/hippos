@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from hippocampus.tools.structure_strategy import (
+from hippos.tools.structure.structure_strategy import (
     ARCHETYPE_FRONTEND,
     ARCHETYPE_GENERIC,
     ARCHETYPE_MONOREPO,

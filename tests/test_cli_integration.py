@@ -1,4 +1,4 @@
-"""CLI integration tests — hippo commands against ~/yunwei/claude_codex."""
+"""CLI integration tests - hippos commands against ~/yunwei/claude_codex."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ import pytest
 import click
 from click.testing import CliRunner
 
-from hippocampus.cli import cli
+from hippos.cli import cli
 
 
 @pytest.fixture
@@ -22,18 +22,18 @@ class TestCliHelp:
     def test_main_help(self, runner):
         result = runner.invoke(cli, ["--help"])
         assert result.exit_code == 0
-        assert "Hippocampus" in result.output
+        assert "Hippos" in result.output
         assert "Quick start:" in result.output
-        assert "Full generation: hippo ." in result.output
-        assert "Another repo: hippo /path/to/repo" in result.output
-        assert "Incremental refresh: hippo update" in result.output
-        assert "Force full refresh: hippo refresh ." in result.output
+        assert "Full generation: hippos ." in result.output
+        assert "Another repo: hippos /path/to/repo" in result.output
+        assert "Incremental refresh: hippos update" in result.output
+        assert "Force full refresh: hippos refresh ." in result.output
         assert "Manual" in result.output
         assert "steps:" in result.output
-        assert "hippo init / sig-extract / tree / index / structure-prompt" in result.output
+        assert "hippos init / sig-extract / tree / index / structure-prompt" in result.output
         assert "Inspect" in result.output
         assert "outputs:" in result.output
-        assert "hippo overview" in result.output
+        assert "hippos overview" in result.output
         assert "Core Workflow:" in result.output
         assert "Explore & Inspect:" in result.output
         assert "Advanced Tools:" in result.output
@@ -138,9 +138,9 @@ class TestCliInit:
     def test_init_creates_hippo_dir(self, runner, tmp_path):
         result = runner.invoke(cli, ["init", str(tmp_path)])
         assert result.exit_code == 0
-        hippo_dir = tmp_path / ".hippocampus"
-        assert hippo_dir.is_dir()
-        assert (hippo_dir / "config.yaml").exists()
+        hippos_dir = tmp_path / ".hippos"
+        assert hippos_dir.is_dir()
+        assert (hippos_dir / "config.yaml").exists()
 
     def test_init_idempotent(self, runner, tmp_path):
         runner.invoke(cli, ["init", str(tmp_path)])
@@ -150,7 +150,7 @@ class TestCliInit:
 
 
 class TestCliSigExtract:
-    """System test: run hippo sig-extract against real codebase."""
+    """System test: run hippos sig-extract against real codebase."""
 
     def test_sig_extract_on_target(self, runner, target_path):
         """Run sig-extract on claude_codex, verify output."""
@@ -163,7 +163,7 @@ class TestCliSigExtract:
         assert "signatures" in result.output
 
         # Verify output file
-        out_file = target_path / ".hippocampus" / "code-signatures.json"
+        out_file = target_path / ".hippos" / "code-signatures.json"
         assert out_file.exists()
         data = json.loads(out_file.read_text())
         assert data["version"] == 1
@@ -171,7 +171,7 @@ class TestCliSigExtract:
 
 
 class TestCliTree:
-    """System test: run hippo tree against real codebase (requires repomix)."""
+    """System test: run hippos tree against real codebase (requires repomix)."""
 
     def test_tree_on_target(self, runner, target_path):
         """Run tree on claude_codex, verify output."""
@@ -182,7 +182,7 @@ class TestCliTree:
         assert result.exit_code == 0, f"Failed: {result.output}"
         assert "nodes" in result.output
 
-        out_file = target_path / ".hippocampus" / "tree.json"
+        out_file = target_path / ".hippos" / "tree.json"
         assert out_file.exists()
         data = json.loads(out_file.read_text())
         assert data["version"] == 1
@@ -190,10 +190,10 @@ class TestCliTree:
 
 
 class TestCliStructurePrompt:
-    """Test hippo structure-prompt (depends on tree.json existing)."""
+    """Test hippos structure-prompt (depends on tree.json existing)."""
 
     def test_structure_prompt_after_tree(self, runner, target_path):
-        tree_file = target_path / ".hippocampus" / "tree.json"
+        tree_file = target_path / ".hippos" / "tree.json"
         if not tree_file.exists():
             pytest.skip("tree.json not found, run tree test first")
         result = runner.invoke(cli, [
@@ -202,7 +202,7 @@ class TestCliStructurePrompt:
         assert result.exit_code == 0, f"Failed: {result.output}"
         assert "chars" in result.output
 
-        out = target_path / ".hippocampus" / "structure-prompt.md"
+        out = target_path / ".hippos" / "structure-prompt.md"
         assert out.exists()
         md = out.read_text()
         assert md.startswith("# Repository Structure")

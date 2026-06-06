@@ -1,10 +1,10 @@
-"""Tests for hippocampus.parsers package (lang_map, query_loader, ts_extract)."""
+"""Tests for hippos.parsers package (lang_map, query_loader, ts_extract)."""
 
 from __future__ import annotations
 
 from pathlib import Path
 
-from hippocampus.parsers.lang_map import (
+from hippos.parsers.lang_map import (
     EXTENSION_MAP,
     detect_file_language,
     filename_to_lang,
@@ -88,7 +88,7 @@ class TestFilenameToLang:
 
 # ── query_loader tests ──
 
-from hippocampus.parsers.query_loader import (
+from hippos.parsers.query_loader import (
     available_languages,
     find_queries_dir,
     load_query,
@@ -131,7 +131,7 @@ class TestQueryLoader:
 
 # ── ts_extract tests ──
 
-from hippocampus.parsers.ts_extract import (
+from hippos.parsers.ts_extract import (
     _normalize_query_for_runtime,
     extract_definitions,
     extract_tags,

@@ -1,0 +1,41 @@
+{
+  "name": "hippos",
+  "version": "0.1.7",
+  "description": "npm launcher for the Hippos Python codebase mapping CLI.",
+  "keywords": [
+    "code-indexing",
+    "code-navigation",
+    "repository-analysis",
+    "developer-tools",
+    "llm",
+    "python"
+  ],
+  "homepage": "https://github.com/SeemSeam/hippos#readme",
+  "author": "bfly",
+  "bugs": {
+    "url": "https://github.com/SeemSeam/hippos/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SeemSeam/hippos.git"
+  },
+  "license": "MIT",
+  "bin": {
+    "hippos": "bin/hippos.js"
+  },
+  "files": [
+    "bin/",
+    "README.zh-CN.md",
+    "NPM_RELEASE.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "node --check bin/hippos.js",
+    "pack:dry-run": "npm pack --dry-run"
+  }
+}

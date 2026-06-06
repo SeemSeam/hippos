@@ -2,16 +2,16 @@ from __future__ import annotations
 
 import json
 
-from hippocampus.integration.bundle_state import (
+from hippos.integration.bundle_state import (
     compute_bundle_fingerprint,
     write_bundle_state,
 )
 
 
 def _write_bundle_files(tmp_path, *, manifest_kind: str = "source") -> None:
-    hippo = tmp_path / ".hippocampus"
+    hippo = tmp_path / ".hippos"
     hippo.mkdir(parents=True, exist_ok=True)
-    (hippo / "hippocampus-index.json").write_text(
+    (hippo / "hippos-index.json").write_text(
         '{"files":{"src/app.py":{}}}\n',
         encoding="utf-8",
     )

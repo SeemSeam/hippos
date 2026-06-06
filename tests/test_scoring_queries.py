@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from hippocampus.query.expand import build_expand
-from hippocampus.query.overview import build_overview
-from hippocampus.scoring import compute_module_scores
+from hippos.query.expand import build_expand
+from hippos.query.overview import build_overview
+from hippos.scoring import compute_module_scores
 
 from scoring_query_fixtures import sample_index, scored_index
 

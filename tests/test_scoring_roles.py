@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from hippocampus.scoring import (
+from hippos.scoring import (
     _classify_file_viz_role,
     _classify_module_role,
     _classify_tier,

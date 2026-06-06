@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from hippocampus.resources import copy_packaged_queries, packaged_queries_dir
+from hippos.resources import copy_packaged_queries, packaged_queries_dir
 
 
 def test_packaged_queries_dir_contains_scm_files():
@@ -10,7 +10,7 @@ def test_packaged_queries_dir_contains_scm_files():
 
 
 def test_copy_packaged_queries(tmp_path: Path):
-    dst = tmp_path / ".hippocampus" / "queries"
+    dst = tmp_path / ".hippos" / "queries"
     copied = copy_packaged_queries(dst)
     assert copied > 0
     assert any(dst.glob("*.scm"))

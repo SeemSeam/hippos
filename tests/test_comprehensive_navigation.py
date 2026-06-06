@@ -12,30 +12,30 @@ from pathlib import Path
 
 import pytest
 
-from hippocampus.config import load_config
-from hippocampus.mcp.tools import navigate_tool
-from hippocampus.tools.index_gen import run_index_pipeline
-from hippocampus.tools.ranker import is_repomap_available
+from hippos.config import load_config
+from hippos.mcp.tools import navigate_tool
+from hippos.tools.index.index_gen import run_index_pipeline
+from hippos.tools.ranker import is_repomap_available
 
 
 @pytest.fixture
 def project_root():
-    """Resolve hippocampus project root independent of current working directory."""
+    """Resolve hippos project root independent of current working directory."""
     return Path(__file__).resolve().parents[1]
 
 
 @pytest.fixture
-def hippo_dir(project_root):
-    """Use hippocampus-local .hippocampus and rebuild index if fixture data was cleaned."""
-    output_dir = project_root / ".hippocampus"
-    index_path = output_dir / "hippocampus-index.json"
+def hippos_dir(project_root):
+    """Use hippos-local .hippos and rebuild index if fixture data was cleaned."""
+    output_dir = project_root / ".hippos"
+    index_path = output_dir / "hippos-index.json"
     rebuild_required = not index_path.is_file()
     if index_path.is_file():
         try:
             index_data = json.loads(index_path.read_text(encoding="utf-8"))
             indexed_files = set(index_data.get("files", {}))
             rebuild_required = (
-                "src/hippocampus/tools/index/index_gen.py" not in indexed_files
+                "src/hippos/tools/index/index_gen.py" not in indexed_files
             )
         except (OSError, json.JSONDecodeError):
             rebuild_required = True
@@ -59,28 +59,28 @@ TEST_SCENARIOS = [
     {
         'name': 'Single focus - index gen',
         'query': 'phase_2 process_file cache implementation',
-        'focus': ['src/hippocampus/tools/index/index_gen.py'],
+        'focus': ['src/hippos/tools/index/index_gen.py'],
         'expected_symbols': ['phase_2', 'process_file'],
-        'expected_files': ['src/hippocampus/tools/index/index_gen.py']
+        'expected_files': ['src/hippos/tools/index/index_gen.py']
     },
     {
         'name': 'Single focus - repomap adapter',
-        'query': 'HippoRepoMap get_ranked_tags snippet extraction',
-        'focus': ['src/hippocampus/tools/repomap_adapter.py'],
-        'expected_symbols': ['HippoRepoMap', 'get_ranked_tags', 'get_ranked_snippets'],
-        'expected_files': ['src/hippocampus/tools/repomap_adapter.py']
+        'query': 'HipposRepoMap get_ranked_tags snippet extraction',
+        'focus': ['src/hippos/tools/repomap_adapter.py'],
+        'expected_symbols': ['HipposRepoMap', 'get_ranked_tags', 'get_ranked_snippets'],
+        'expected_files': ['src/hippos/tools/repomap_adapter.py']
     },
     {
         'name': 'Multiple focus - tools',
         'query': 'phase_2 and get_ranked_snippets implementation',
         'focus': [
-            'src/hippocampus/tools/index/index_gen.py',
-            'src/hippocampus/tools/repomap_adapter.py'
+            'src/hippos/tools/index/index_gen.py',
+            'src/hippos/tools/repomap_adapter.py'
         ],
         'expected_symbols': ['phase_2', 'get_ranked_snippets'],
         'expected_files': [
-            'src/hippocampus/tools/index/index_gen.py',
-            'src/hippocampus/tools/repomap_adapter.py'
+            'src/hippos/tools/index/index_gen.py',
+            'src/hippos/tools/repomap_adapter.py'
         ]
     },
     {
@@ -93,9 +93,9 @@ TEST_SCENARIOS = [
     {
         'name': 'Single focus - MCP tools',
         'query': 'navigate tool implementation',
-        'focus': ['src/hippocampus/mcp/tools.py'],
+        'focus': ['src/hippos/mcp/tools.py'],
         'expected_symbols': ['navigate_tool', 'extract_mentions'],
-        'expected_files': ['src/hippocampus/mcp/tools.py']
+        'expected_files': ['src/hippos/mcp/tools.py']
     }
 ]
 
@@ -250,7 +250,7 @@ def analyze_navigation_result(result, scenario, budget):
     return metrics
 
 
-def test_comprehensive_navigation_matrix(hippo_dir, project_root):
+def test_comprehensive_navigation_matrix(hippos_dir, project_root):
     """Test navigation across all scenarios and token budgets."""
     if not is_repomap_available(project_root):
         pytest.skip("RepoMap not available")
@@ -270,7 +270,7 @@ def test_comprehensive_navigation_matrix(hippo_dir, project_root):
                 query=scenario['query'],
                 focus_files=scenario['focus'],
                 budget_tokens=budget,
-                hippo_dir=hippo_dir
+                hippos_dir=hippos_dir
             )
 
             metrics = analyze_navigation_result(result, scenario, budget)

@@ -5,15 +5,15 @@ from pathlib import Path
 
 import pytest
 
-from hippocampus.config import HippoConfig
-from hippocampus.tools.architect_llm import LLMAnalyzer
-from hippocampus.tools.index_gen_phase2 import phase2_assign_files, phase2_full
-from hippocampus.tools.index_gen_phase3 import phase3a_enrich_module_impl
+from hippos.config import HipposConfig
+from hippos.tools.architect.architect_llm import LLMAnalyzer
+from hippos.tools.index.index_gen_phase2 import phase2_assign_files, phase2_full
+from hippos.tools.index.index_gen_phase3 import phase3a_enrich_module_impl
 
 
 @pytest.mark.asyncio
 async def test_phase2_full_passes_project_root(monkeypatch, tmp_path: Path):
-    config = HippoConfig(target=str(tmp_path))
+    config = HipposConfig(target=str(tmp_path))
     seen: dict[str, object] = {}
 
     def fake_build_phase_2a_messages(*, project_root=None, **kwargs):
@@ -29,7 +29,7 @@ async def test_phase2_full_passes_project_root(monkeypatch, tmp_path: Path):
         return {"a.py": "core"}
 
     monkeypatch.setattr(
-        "hippocampus.llm.prompts.build_phase_2a_messages",
+        "hippos.llm.prompts.build_phase_2a_messages",
         fake_build_phase_2a_messages,
     )
     class FakeGateway:
@@ -37,11 +37,11 @@ async def test_phase2_full_passes_project_root(monkeypatch, tmp_path: Path):
             return await fake_run_json_task_with_retry(self, phase, messages, validator)
 
     monkeypatch.setattr(
-        "hippocampus.tools.index_gen_phase2.create_llm_gateway",
+        "hippos.tools.index.index_gen_phase2.create_llm_gateway",
         lambda _config: FakeGateway(),
     )
     monkeypatch.setattr(
-        "hippocampus.tools.index_gen_phase2.phase2_assign_files",
+        "hippos.tools.index.index_gen_phase2.phase2_assign_files",
         fake_assign,
     )
 
@@ -58,7 +58,7 @@ async def test_phase2_full_passes_project_root(monkeypatch, tmp_path: Path):
 
 @pytest.mark.asyncio
 async def test_phase2_assign_files_batches_through_gateway(monkeypatch, tmp_path: Path):
-    config = HippoConfig(target=str(tmp_path))
+    config = HipposConfig(target=str(tmp_path))
     seen: dict[str, object] = {}
 
     def fake_build_phase_2b_messages(*, project_root=None, **kwargs):
@@ -73,15 +73,16 @@ async def test_phase2_assign_files_batches_through_gateway(monkeypatch, tmp_path
             seen["validator_count"] = len(validators)
             return [
                 type("Result", (), {"data": [{"file": "file_01.py", "module_id": "mod:core"}], "errors": []})(),
+                type("Result", (), {"data": [{"file": "file_33.py", "module_id": "mod:infra"}], "errors": []})(),
                 type("Result", (), {"data": [{"file": "file_65.py", "module_id": "mod:infra"}], "errors": []})(),
             ]
 
     monkeypatch.setattr(
-        "hippocampus.llm.prompts.build_phase_2b_messages",
+        "hippos.llm.prompts.build_phase_2b_messages",
         fake_build_phase_2b_messages,
     )
     monkeypatch.setattr(
-        "hippocampus.tools.index_gen_phase2.create_llm_gateway",
+        "hippos.tools.index.index_gen_phase2.create_llm_gateway",
         lambda _config: FakeGateway(),
     )
 
@@ -101,11 +102,12 @@ async def test_phase2_assign_files_batches_through_gateway(monkeypatch, tmp_path
         set(phase1_results.keys()),
     )
 
-    assert seen["request_count"] == 2
-    assert seen["validator_count"] == 2
-    assert seen["file_counts"] == [64, 1]
-    assert seen["project_roots"] == [tmp_path.resolve(), tmp_path.resolve()]
+    assert seen["request_count"] == 3
+    assert seen["validator_count"] == 3
+    assert seen["file_counts"] == [32, 32, 1]
+    assert seen["project_roots"] == [tmp_path.resolve(), tmp_path.resolve(), tmp_path.resolve()]
     assert assignments["file_01.py"] == "mod:core"
+    assert assignments["file_33.py"] == "mod:infra"
     assert assignments["file_65.py"] == "mod:infra"
 
 
@@ -123,13 +125,13 @@ async def test_phase3a_passes_project_root(monkeypatch, tmp_path: Path):
         return type("Result", (), {"data": {"desc": "enriched", "key_files": ["a.py"]}, "errors": []})()
 
     class FakeLLM:
-        config = HippoConfig(target=str(tmp_path))
+        config = HipposConfig(target=str(tmp_path))
 
         async def run_json_task_with_retry(self, phase, messages, validator):
             return await fake_run_json_task_with_retry(self, phase, messages, validator)
 
     monkeypatch.setattr(
-        "hippocampus.llm.prompts.build_phase_3a_messages",
+        "hippos.llm.prompts.build_phase_3a_messages",
         fake_build_phase_3a_messages,
     )
 
@@ -161,7 +163,7 @@ async def test_architect_plan_passes_project_root(monkeypatch, tmp_path: Path):
         return type("Result", (), {"data": {"summary": "ok"}})()
 
     monkeypatch.setattr(
-        "hippocampus.tools.architect_llm.build_architect_plan_messages",
+        "hippos.tools.architect.architect_llm.build_architect_plan_messages",
         fake_build_architect_plan_messages,
     )
     class FakeGateway:
@@ -169,11 +171,11 @@ async def test_architect_plan_passes_project_root(monkeypatch, tmp_path: Path):
             return await fake_run_json_task(self, phase, messages)
 
     monkeypatch.setattr(
-        "hippocampus.tools.architect_llm.create_llm_gateway",
+        "hippos.tools.architect.architect_llm.create_llm_gateway",
         lambda _config: FakeGateway(),
     )
 
-    analyzer = LLMAnalyzer(HippoConfig(target=str(tmp_path)))
+    analyzer = LLMAnalyzer(HipposConfig(target=str(tmp_path)))
 
     result = await analyzer.plan_feature({"project": "demo", "stats": {}, "modules": []}, "add cache")
 

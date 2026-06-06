@@ -1,11 +1,11 @@
-"""Core tests for hippocampus.tag_vocab."""
+"""Core tests for hippos.tag_vocab."""
 
 from __future__ import annotations
 
 import json
 
-from hippocampus.llm.validators import validate_phase_1
-from hippocampus.tag_vocab import TagVocab, default_vocab, is_valid_new_tag
+from hippos.llm.validators import validate_phase_1
+from hippos.tag_vocab import TagVocab, default_vocab, is_valid_new_tag
 
 
 class TestDefaultVocab:

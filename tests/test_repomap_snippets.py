@@ -6,7 +6,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from hippocampus.tools.repomap_adapter import HippoRepoMap, check_repomap_available
+from hippos.tools.repomap_adapter import HipposRepoMap, check_repomap_available
 
 
 @pytest.fixture
@@ -46,7 +46,7 @@ def test_get_ranked_snippets_basic(temp_repo):
     if not available:
         pytest.skip("RepoMap not available")
 
-    repomap = HippoRepoMap(temp_repo, verbose=False)
+    repomap = HipposRepoMap(temp_repo, verbose=False)
 
     # Mock ranked tags
     ranked_tags = [
@@ -80,7 +80,7 @@ def test_snippet_budget_control(temp_repo):
     if not available:
         pytest.skip("RepoMap not available")
 
-    repomap = HippoRepoMap(temp_repo, verbose=False)
+    repomap = HipposRepoMap(temp_repo, verbose=False)
 
     ranked_tags = [
         ("test.py", str(temp_repo / "test.py"), 2, "TestClass", "class"),
@@ -106,7 +106,7 @@ def test_snippet_per_file_cap(temp_repo):
     if not available:
         pytest.skip("RepoMap not available")
 
-    repomap = HippoRepoMap(temp_repo, verbose=False)
+    repomap = HipposRepoMap(temp_repo, verbose=False)
 
     ranked_tags = [
         ("test.py", str(temp_repo / "test.py"), 2, "TestClass", "class"),
@@ -134,7 +134,7 @@ def test_snippet_token_cap(temp_repo):
     if not available:
         pytest.skip("RepoMap not available")
 
-    repomap = HippoRepoMap(temp_repo, verbose=False)
+    repomap = HipposRepoMap(temp_repo, verbose=False)
 
     ranked_tags = [
         ("test.py", str(temp_repo / "test.py"), 2, "TestClass", "class"),
@@ -160,7 +160,7 @@ def test_empty_input_handling(temp_repo):
     if not available:
         pytest.skip("RepoMap not available")
 
-    repomap = HippoRepoMap(temp_repo, verbose=False)
+    repomap = HipposRepoMap(temp_repo, verbose=False)
 
     # Empty tags
     snippets = repomap.get_ranked_snippets(
@@ -177,7 +177,7 @@ def test_repomap_exception_fallback(temp_repo):
     if not available:
         pytest.skip("RepoMap not available")
 
-    repomap = HippoRepoMap(temp_repo, verbose=False)
+    repomap = HipposRepoMap(temp_repo, verbose=False)
 
     # Mock render_tree to raise exception
     with patch.object(repomap.repomap, 'render_tree', side_effect=Exception("Test error")):
@@ -203,7 +203,7 @@ def test_deterministic_snippet_order(temp_repo):
     if not available:
         pytest.skip("RepoMap not available")
 
-    repomap = HippoRepoMap(temp_repo, verbose=False)
+    repomap = HipposRepoMap(temp_repo, verbose=False)
 
     ranked_tags = [
         ("test.py", str(temp_repo / "test.py"), 2, "TestClass", "class"),

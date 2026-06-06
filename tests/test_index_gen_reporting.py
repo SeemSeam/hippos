@@ -4,13 +4,13 @@ from pathlib import Path
 
 import pytest
 
-from hippocampus.tools.index_gen_reporting import (
+from hippos.tools.index.index_gen_reporting import (
     format_failed_file_summary,
     format_phase_duration,
     format_progress_bar,
     format_progress_line,
 )
-from hippocampus.tools.index_gen_runtime import run_index_pipeline_impl
+from hippos.tools.index.index_gen_runtime import run_index_pipeline_impl
 
 
 def test_format_phase_duration():
@@ -64,7 +64,7 @@ async def test_run_index_pipeline_impl_prints_phase_durations(tmp_path: Path, ca
 
     await run_index_pipeline_impl(
         target=tmp_path,
-        output_dir=tmp_path / ".hippocampus",
+        output_dir=tmp_path / ".hippos",
         phase=None,
         verbose=True,
         show_progress=True,
@@ -116,7 +116,7 @@ async def test_run_index_pipeline_impl_show_progress_without_verbose(tmp_path: P
 
     await run_index_pipeline_impl(
         target=tmp_path,
-        output_dir=tmp_path / ".hippocampus",
+        output_dir=tmp_path / ".hippos",
         phase=None,
         verbose=False,
         show_progress=True,

@@ -1,8 +1,8 @@
 from pathlib import Path
 
 
-def test_hippocampus_source_does_not_import_cortex_or_llm_proxy():
-    root = Path(__file__).resolve().parents[1] / "src" / "hippocampus"
+def test_hippos_source_does_not_import_cortex_or_llm_proxy():
+    root = Path(__file__).resolve().parents[1] / "src" / "hippos"
     offenders: list[str] = []
 
     for path in root.rglob("*.py"):
@@ -12,14 +12,14 @@ def test_hippocampus_source_does_not_import_cortex_or_llm_proxy():
         if "from llm_proxy" in text or "import llm_proxy" in text:
             offenders.append(str(path.relative_to(root.parent.parent)))
 
-    assert offenders == [], f"hippocampus must stay standalone: {offenders}"
+    assert offenders == [], f"hippos must stay standalone: {offenders}"
 
 
-def test_hippocampus_memory_shims_removed():
+def test_hippos_memory_shims_removed():
     repo_root = Path(__file__).resolve().parents[2]
     legacy_paths = [
-        repo_root / "hippocampus" / "src" / "hippocampus" / "cli_memory.py",
-        repo_root / "hippocampus" / "src" / "hippocampus" / "memory",
+        repo_root / "hippos" / "src" / "hippos" / "cli_memory.py",
+        repo_root / "hippos" / "src" / "hippos" / "memory",
     ]
     leftovers = [str(path.relative_to(repo_root)) for path in legacy_paths if path.exists()]
-    assert leftovers == [], f"legacy hippocampus memory surfaces must be removed: {leftovers}"
+    assert leftovers == [], f"legacy hippos memory surfaces must be removed: {leftovers}"

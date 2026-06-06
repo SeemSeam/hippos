@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from hippocampus.cli_pipeline_helpers import (
+from hippos.cli.pipeline_helpers import (
     build_ranked_tag_report,
     format_ranked_tag_line,
     run_pipeline_steps,
@@ -63,4 +63,3 @@ def test_run_pipeline_steps_orders_invocations_and_messages():
     assert messages[0] == "=== Step A ==="
     assert messages[1] == "=== Step B ==="
     assert messages[-1] == "=== Pipeline complete ==="
-

@@ -1,4 +1,4 @@
-"""Path validation security tests for Hippocampus.
+"""Path validation security tests for Hippos.
 
 Tests ensure that:
 1. Absolute paths are rejected
@@ -9,7 +9,7 @@ Tests ensure that:
 
 import pytest
 from pathlib import Path
-from hippocampus.tools.repomap_adapter import HippoRepoMap
+from hippos.tools.repomap_adapter import HipposRepoMap
 
 
 @pytest.fixture
@@ -26,12 +26,12 @@ def temp_repo(tmp_path):
 
 
 class TestPathValidation:
-    """Test path validation in HippoRepoMap."""
+    """Test path validation in HipposRepoMap."""
 
     def test_rejects_absolute_paths(self, temp_repo):
         """Absolute paths should be rejected."""
         index_files = {"src/main.py", "src/utils.py"}
-        repomap = HippoRepoMap(temp_repo, index_files=index_files)
+        repomap = HipposRepoMap(temp_repo, index_files=index_files)
 
         abs_path = str(temp_repo / "src" / "main.py")
         result = repomap._validate_repo_paths([abs_path])
@@ -41,7 +41,7 @@ class TestPathValidation:
     def test_rejects_parent_dir_escape(self, temp_repo):
         """Paths with .. components should be rejected."""
         index_files = {"src/main.py", "src/utils.py"}
-        repomap = HippoRepoMap(temp_repo, index_files=index_files)
+        repomap = HipposRepoMap(temp_repo, index_files=index_files)
 
         malicious_paths = [
             "../etc/passwd",
@@ -56,7 +56,7 @@ class TestPathValidation:
     def test_accepts_valid_relative_paths(self, temp_repo):
         """Valid relative paths should be accepted."""
         index_files = {"src/main.py", "src/utils.py", "tests/test_main.py"}
-        repomap = HippoRepoMap(temp_repo, index_files=index_files)
+        repomap = HipposRepoMap(temp_repo, index_files=index_files)
 
         valid_paths = ["src/main.py", "src/utils.py", "tests/test_main.py"]
         result = repomap._validate_repo_paths(valid_paths)
@@ -67,7 +67,7 @@ class TestPathValidation:
     def test_filters_unknown_paths_when_index_provided(self, temp_repo):
         """When index_files is provided, unknown paths should be rejected."""
         index_files = {"src/main.py", "src/utils.py"}
-        repomap = HippoRepoMap(temp_repo, index_files=index_files)
+        repomap = HipposRepoMap(temp_repo, index_files=index_files)
 
         paths = ["src/main.py", "unknown/file.py", "src/utils.py"]
         result = repomap._validate_repo_paths(paths)
@@ -78,7 +78,7 @@ class TestPathValidation:
         """Path matching should be case-insensitive."""
         # Use mixed case in index
         index_files = {"Src/Main.py", "SRC/UTILS.PY"}
-        repomap = HippoRepoMap(temp_repo, index_files=index_files)
+        repomap = HipposRepoMap(temp_repo, index_files=index_files)
 
         # Query with different case
         paths = ["src/main.py", "SRC/utils.py"]
@@ -89,7 +89,7 @@ class TestPathValidation:
     def test_rejects_paths_outside_root_after_resolution(self, temp_repo):
         """Paths that resolve outside the root should be rejected."""
         index_files = {"src/main.py"}
-        repomap = HippoRepoMap(temp_repo, index_files=index_files)
+        repomap = HipposRepoMap(temp_repo, index_files=index_files)
 
         # This is a relative path that would resolve outside root
         # (if the repo structure didn't prevent it)
@@ -100,7 +100,7 @@ class TestPathValidation:
 
     def test_empty_and_none_input(self, temp_repo):
         """Empty and None inputs should be handled gracefully."""
-        repomap = HippoRepoMap(temp_repo)
+        repomap = HipposRepoMap(temp_repo)
 
         assert repomap._validate_repo_paths([]) == []
         assert repomap._validate_repo_paths([""]) == []
@@ -110,7 +110,7 @@ class TestPathValidation:
     def test_normalizes_path_separators(self, temp_repo):
         """Paths should be normalized to POSIX format."""
         index_files = {"src/main.py", "src/sub/nested/file.py"}
-        repomap = HippoRepoMap(temp_repo, index_files=index_files)
+        repomap = HipposRepoMap(temp_repo, index_files=index_files)
 
         windows_path = "src\\sub\\nested\\file.py"
         result = repomap._validate_repo_paths([windows_path])
@@ -122,7 +122,7 @@ class TestPathValidation:
         from unittest.mock import Mock, patch
 
         index_files = {"src/main.py", "src/utils.py"}
-        repomap = HippoRepoMap(temp_repo, index_files=index_files)
+        repomap = HipposRepoMap(temp_repo, index_files=index_files)
 
         # Mock the Aider RepoMap to avoid actual parsing
         with patch.object(repomap.repomap, "get_ranked_tags", return_value=[]):
@@ -139,7 +139,7 @@ class TestPathValidation:
     def test_no_index_files_allows_all_relative_paths(self, temp_repo):
         """When index_files is not provided, all relative paths within root are allowed."""
         # No index_files constraint
-        repomap = HippoRepoMap(temp_repo)
+        repomap = HipposRepoMap(temp_repo)
 
         paths = ["src/main.py", "tests/test_main.py", "some/unknown/path.py"]
         result = repomap._validate_repo_paths(paths)

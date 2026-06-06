@@ -1,4 +1,4 @@
-from hippocampus import (
+from hippos import (
     build_index,
     initialize_project,
     navigate,
@@ -6,13 +6,13 @@ from hippocampus import (
     render_context_snippets,
     summarize_project_index,
 )
-from hippocampus.nav import NavigateResult
+from hippos.nav import NavigateResult
 
 
 def test_initialize_project_creates_output_dir(tmp_path):
-    hippo_dir = initialize_project(tmp_path)
-    assert hippo_dir == tmp_path / ".hippocampus"
-    assert hippo_dir.is_dir()
+    hippos_dir = initialize_project(tmp_path)
+    assert hippos_dir == tmp_path / ".hippos"
+    assert hippos_dir.is_dir()
 
 
 def test_navigate_delegates_to_public_navigation(monkeypatch, tmp_path):
@@ -22,14 +22,14 @@ def test_navigate_delegates_to_public_navigation(monkeypatch, tmp_path):
         called.update(kwargs)
         return NavigateResult(ranked_files=[{"file": "src/router.py", "rank": 1.0, "tier": 1}])
 
-    monkeypatch.setattr("hippocampus.api.navigate_codebase", _stub)
+    monkeypatch.setattr("hippos.api.navigate_codebase", _stub)
     result = navigate("find router", target=tmp_path, budget_tokens=123, conversation_files=["src/router.py"])
 
     assert isinstance(result, NavigateResult)
     assert called["query"] == "find router"
     assert called["budget_tokens"] == 123
     assert called["conversation_files"] == ["src/router.py"]
-    assert called["hippo_dir"] == tmp_path / ".hippocampus"
+    assert called["hippos_dir"] == tmp_path / ".hippos"
 
 
 def test_public_support_helpers_are_exported():

@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from hippocampus.tools.structure_prompt_project_map import (
+from hippos.tools.structure.structure_prompt_project_map import (
     rank_entry_files,
     render_project_map,
     split_path,
 )
-from hippocampus.types import TreeNode
+from hippos.types import TreeNode
 
 
 def test_split_path_and_rank_entry_files():

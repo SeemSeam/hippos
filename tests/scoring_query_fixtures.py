@@ -4,14 +4,14 @@ from __future__ import annotations
 
 import pytest
 
-from hippocampus.scoring import compute_module_scores
+from hippos.scoring import compute_module_scores
 
 
 @pytest.fixture
 def sample_index():
     return {
         "version": 2,
-        "schema": "hippocampus-index/v2",
+        "schema": "hippos-index/v2",
         "generated_at": "2026-01-01T00:00:00+00:00",
         "project": {
             "overview": "A sample project for testing.",

@@ -1,4 +1,4 @@
-"""Tests for hippocampus.tools.structure_prompt — Markdown summary generation."""
+"""Tests for hippos.tools.structure.structure_prompt — Markdown summary generation."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from hippocampus.tools.structure_prompt import (
+from hippos.tools.structure.structure_prompt import (
     ROLE_CONFIG,
     ROLE_DOCS,
     ROLE_SOURCE,
@@ -19,9 +19,9 @@ from hippocampus.tools.structure_prompt import (
     classify_file_role,
     run_structure_prompt,
 )
-from hippocampus.types import TreeNode
-from hippocampus.utils import estimate_tokens, write_json
-from hippocampus.constants import TREE_FILE, INDEX_FILE, TREE_DIFF_FILE
+from hippos.types import TreeNode
+from hippos.utils import estimate_tokens, write_json
+from hippos.constants import TREE_FILE, INDEX_FILE, TREE_DIFF_FILE
 
 
 class TestRenderNode:
@@ -98,7 +98,7 @@ class TestTruncateTree:
 
 
 def _sample_index():
-    """Minimal hippocampus-index.json data for testing."""
+    """Minimal hippos-index.json data for testing."""
     return {
         "version": 2,
         "project": {

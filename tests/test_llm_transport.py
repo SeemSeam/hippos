@@ -16,14 +16,14 @@ from llmgateway.transport_payloads import (
     build_openai_responses_url,
 )
 
-from hippocampus.config import HippoConfig
-from hippocampus.llm.adapters import runtime_spec_from_hippo_config
-from hippocampus.llm.gateway import LLMGateway
-from hippocampus.user_llm_config import build_user_llm_config
+from hippos.config import HipposConfig
+from hippos.llm.adapters import runtime_spec_from_hippos_config
+from hippos.llm.gateway import LLMGateway
+from hippos.user_llm_config import build_user_llm_config
 
 
-def _provider_dict(cfg: HippoConfig) -> dict[str, object]:
-    provider = runtime_spec_from_hippo_config(cfg).provider
+def _provider_dict(cfg: HipposConfig) -> dict[str, object]:
+    provider = runtime_spec_from_hippos_config(cfg).provider
     return {
         "provider_type": provider.provider_type,
         "api_style": provider.api_style,
@@ -43,7 +43,7 @@ def test_user_llm_config_defaults_to_codex_style():
 
 
 def test_runtime_prefers_openai_responses_for_glm():
-    cfg = HippoConfig.model_validate(
+    cfg = HipposConfig.model_validate(
         {
             "llm": {
                 "provider_type": "glm",
@@ -61,7 +61,7 @@ def test_runtime_prefers_openai_responses_for_glm():
 
 
 def test_normalize_model_request_strips_responses_quality_suffix():
-    cfg = HippoConfig.model_validate(
+    cfg = HipposConfig.model_validate(
         {
             "llm": {
                 "provider_type": "glm",
@@ -121,15 +121,18 @@ def test_openai_responses_payload_includes_reasoning_effort():
 
 @pytest.mark.asyncio
 async def test_llm_call_raises_when_base_url_missing():
-    cfg = HippoConfig()
+    cfg = HipposConfig()
     llm = LLMGateway(cfg)
-    with pytest.raises(RuntimeError, match="base_url is not configured"):
+    with pytest.raises(
+        RuntimeError,
+        match="base_url is not configured|No LLM providers are configured",
+    ):
         await llm.run_task("phase_1", [{"role": "user", "content": "x"}])
 
 
 @pytest.mark.asyncio
 async def test_llm_call_passes_reasoning_effort_to_openai_responses(monkeypatch):
-    cfg = HippoConfig.model_validate(
+    cfg = HipposConfig.model_validate(
         {
             "llm": {
                 "provider_type": "glm",
@@ -174,7 +177,7 @@ async def test_llm_call_passes_reasoning_effort_to_openai_responses(monkeypatch)
 
 @pytest.mark.asyncio
 async def test_call_with_retry_retries_on_transport_exception(monkeypatch):
-    cfg = HippoConfig.model_validate(
+    cfg = HipposConfig.model_validate(
         {
             "llm": {
                 "provider_type": "glm",
@@ -213,7 +216,7 @@ async def test_call_with_retry_retries_on_transport_exception(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_call_with_retry_raises_after_transport_retries(monkeypatch):
-    cfg = HippoConfig.model_validate(
+    cfg = HipposConfig.model_validate(
         {
             "llm": {
                 "provider_type": "glm",
@@ -241,7 +244,7 @@ async def test_call_with_retry_raises_after_transport_retries(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_llm_service_generate_raises_clear_timeout(monkeypatch):
-    cfg = HippoConfig.model_validate(
+    cfg = HipposConfig.model_validate(
         {
             "llm": {
                 "provider_type": "glm",
@@ -260,7 +263,7 @@ async def test_llm_service_generate_raises_clear_timeout(monkeypatch):
             }
         }
     )
-    service = LLMService(runtime_spec_from_hippo_config(cfg))
+    service = LLMService(runtime_spec_from_hippos_config(cfg))
 
     async def fake_complete_once(**kwargs):
         del kwargs
@@ -285,8 +288,8 @@ async def test_llm_service_generate_raises_clear_timeout(monkeypatch):
         )
 
 
-def test_runtime_spec_from_hippo_config_exposes_generic_provider_and_tasks():
-    cfg = HippoConfig.model_validate(
+def test_runtime_spec_from_hippos_config_exposes_generic_provider_and_tasks():
+    cfg = HipposConfig.model_validate(
         {
             "llm": {
                 "provider_type": "glm",
@@ -315,7 +318,7 @@ def test_runtime_spec_from_hippo_config_exposes_generic_provider_and_tasks():
             }
         }
     )
-    runtime = runtime_spec_from_hippo_config(cfg)
+    runtime = runtime_spec_from_hippos_config(cfg)
     assert runtime.provider.base_url == "https://backend.example/v1"
     assert runtime.max_concurrent == 12
     assert runtime.retry_max == 4
@@ -326,7 +329,7 @@ def test_runtime_spec_from_hippo_config_exposes_generic_provider_and_tasks():
 
 @pytest.mark.asyncio
 async def test_llm_service_run_many_respects_max_concurrent(monkeypatch):
-    cfg = HippoConfig.model_validate(
+    cfg = HipposConfig.model_validate(
         {
             "llm": {
                 "provider_type": "glm",
@@ -345,7 +348,7 @@ async def test_llm_service_run_many_respects_max_concurrent(monkeypatch):
             }
         }
     )
-    service = LLMService(runtime_spec_from_hippo_config(cfg))
+    service = LLMService(runtime_spec_from_hippos_config(cfg))
     state = {"inflight": 0, "max_seen": 0}
 
     async def fake_complete_once(**kwargs):
@@ -371,7 +374,7 @@ async def test_llm_service_run_many_respects_max_concurrent(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_llm_gateway_delegates_to_service(monkeypatch):
-    cfg = HippoConfig.model_validate(
+    cfg = HipposConfig.model_validate(
         {
             "llm": {
                 "provider_type": "glm",
@@ -408,7 +411,7 @@ async def test_llm_gateway_delegates_to_service(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_llm_gateway_run_json_task_parses_object(monkeypatch):
-    cfg = HippoConfig.model_validate(
+    cfg = HipposConfig.model_validate(
         {
             "llm": {
                 "provider_type": "glm",
@@ -445,7 +448,7 @@ async def test_llm_gateway_run_json_task_parses_object(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_llm_service_run_many_with_retry_respects_max_concurrent(monkeypatch):
-    cfg = HippoConfig.model_validate(
+    cfg = HipposConfig.model_validate(
         {
             "llm": {
                 "provider_type": "glm",
@@ -465,7 +468,7 @@ async def test_llm_service_run_many_with_retry_respects_max_concurrent(monkeypat
             }
         }
     )
-    service = LLMService(runtime_spec_from_hippo_config(cfg))
+    service = LLMService(runtime_spec_from_hippos_config(cfg))
     state = {"inflight": 0, "max_seen": 0}
 
     async def fake_complete_once(**kwargs):

@@ -5,17 +5,17 @@ from pathlib import Path
 
 import pytest
 
-from hippocampus.mcp.tools import navigate_tool, extract_mentions
-from hippocampus.utils import write_json
+from hippos.mcp.tools import navigate_tool, extract_mentions
+from hippos.utils import write_json
 
 
 @pytest.fixture
-def temp_hippo_dir():
-    """Create a temporary hippocampus directory with index."""
+def temp_hippos_dir():
+    """Create a temporary hippos directory with index."""
     with tempfile.TemporaryDirectory() as tmpdir:
         root = Path(tmpdir)
-        hippo_dir = root / ".hippocampus"
-        hippo_dir.mkdir()
+        hippos_dir = root / ".hippos"
+        hippos_dir.mkdir()
 
         # Create test files
         (root / "src").mkdir()
@@ -47,17 +47,17 @@ def helper():
             }
         }
 
-        write_json(hippo_dir / "hippocampus-index.json", index)
+        write_json(hippos_dir / "hippos-index.json", index)
 
-        yield hippo_dir
+        yield hippos_dir
 
 
-def test_navigate_with_snippets(temp_hippo_dir):
+def test_navigate_with_snippets(temp_hippos_dir):
     """Test navigate tool returns snippets when RepoMap available."""
     result = navigate_tool(
         query="MainClass run method",
         focus_files=["src/main.py"],
-        hippo_dir=temp_hippo_dir,
+        hippos_dir=temp_hippos_dir,
     )
 
     assert "ranked_files" in result
@@ -71,13 +71,13 @@ def test_navigate_with_snippets(temp_hippo_dir):
     assert isinstance(result["context_snippets"], list)
 
 
-def test_navigate_fallback_without_repomap(temp_hippo_dir):
+def test_navigate_fallback_without_repomap(temp_hippos_dir):
     """Test navigate tool works without RepoMap."""
     # This should work even if RepoMap is not available
     result = navigate_tool(
         query="helper function",
         focus_files=[],
-        hippo_dir=temp_hippo_dir,
+        hippos_dir=temp_hippos_dir,
     )
 
     assert "ranked_files" in result
@@ -88,12 +88,12 @@ def test_navigate_fallback_without_repomap(temp_hippo_dir):
     assert len(result["ranked_files"]) > 0
 
 
-def test_snippet_quality(temp_hippo_dir):
+def test_snippet_quality(temp_hippos_dir):
     """Test that snippets contain expected fields."""
     result = navigate_tool(
         query="MainClass",
         focus_files=["src/main.py"],
-        hippo_dir=temp_hippo_dir,
+        hippos_dir=temp_hippos_dir,
     )
 
     snippets = result.get("context_snippets", [])
@@ -112,12 +112,12 @@ def test_snippet_quality(temp_hippo_dir):
             assert "tokens" in snippet
 
 
-def test_snippet_budget_enforced(temp_hippo_dir):
+def test_snippet_budget_enforced(temp_hippos_dir):
     """Test that snippet token budget is enforced."""
     result = navigate_tool(
         query="all code",
         focus_files=[],
-        hippo_dir=temp_hippo_dir,
+        hippos_dir=temp_hippos_dir,
     )
 
     snippets = result.get("context_snippets", [])
@@ -214,12 +214,12 @@ def test_mention_extraction_stopwords():
     assert "fix" not in mentioned_idents
 
 
-def test_navigate_with_focus_files(temp_hippo_dir):
+def test_navigate_with_focus_files(temp_hippos_dir):
     """Test that focus files get high priority."""
     result = navigate_tool(
         query="code",
         focus_files=["src/main.py"],
-        hippo_dir=temp_hippo_dir,
+        hippos_dir=temp_hippos_dir,
     )
 
     ranked_files = result["ranked_files"]

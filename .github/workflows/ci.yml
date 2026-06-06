@@ -20,16 +20,16 @@ jobs:
         run: python -m pip install --upgrade pip
 
       - name: Install llmgateway
-        run: python -m pip install "git+https://github.com/bfly123/llmgateway.git@main"
+        run: python -m pip install "seemseam-llmgateway>=0.1.2"
 
-      - name: Install hippocampus
+      - name: Install Hippos
         run: python -m pip install -e ".[dev,repomap]"
 
       - name: Compile sources
-        run: python -m compileall src/hippocampus
+        run: python -m compileall src/hippos src/hippocampus
 
       - name: Smoke CLI
-        run: hippo --help
+        run: hippos --help
 
       - name: Run focused tests
         run: |

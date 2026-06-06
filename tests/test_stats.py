@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from hippocampus.query.stats import (
+from hippos.query.stats import (
     _module_distribution,
     _render_bar,
     _render_sparkline,

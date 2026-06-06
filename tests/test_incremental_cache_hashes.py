@@ -83,7 +83,7 @@ class TestPhase3ModuleInputHash:
 
 class TestCachePersistence:
     def test_phase2_cache_roundtrip(self, tmp_path):
-        out = tmp_path / ".hippocampus"
+        out = tmp_path / ".hippos"
         out.mkdir()
         data = {
             "input_hash": "abc123",
@@ -95,12 +95,12 @@ class TestCachePersistence:
         assert _load_phase2_cache(out) == data
 
     def test_phase2_cache_missing_returns_empty(self, tmp_path):
-        out = tmp_path / ".hippocampus"
+        out = tmp_path / ".hippos"
         out.mkdir()
         assert _load_phase2_cache(out) == {}
 
     def test_phase3_cache_roundtrip(self, tmp_path):
-        out = tmp_path / ".hippocampus"
+        out = tmp_path / ".hippos"
         out.mkdir()
         data = {
             "phase_3a": {
@@ -122,6 +122,6 @@ class TestCachePersistence:
         assert _load_phase3_cache(out) == data
 
     def test_phase3_cache_missing_returns_empty(self, tmp_path):
-        out = tmp_path / ".hippocampus"
+        out = tmp_path / ".hippos"
         out.mkdir()
         assert _load_phase3_cache(out) == {}

@@ -4,6 +4,8 @@ __pycache__/
 *.egg-info/
 dist/
 build/
+node_modules/
+*.tgz
 docs/
 .venv/
 venv/
@@ -27,5 +29,6 @@ tmp/
 .aider.tags.cache.v4/
 .aider.tags.cache.v101/
 .architec/
+.hippos/
 .hippocampus/
 .pytest_cache/

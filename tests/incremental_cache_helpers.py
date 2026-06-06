@@ -6,7 +6,7 @@ import json
 
 import pytest
 
-from hippocampus.tools.index_gen import (
+from hippos.tools.index.index_gen import (
     _content_hash,
     _phase2_input_hash,
     _phase3_module_input_hash,
@@ -46,9 +46,9 @@ def file_to_module():
 
 
 def make_mock_config():
-    from hippocampus.config import HippoConfig
+    from hippos.config import HipposConfig
 
-    return HippoConfig()
+    return HipposConfig()
 
 
 def mock_llm_2a_response():

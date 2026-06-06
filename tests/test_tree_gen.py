@@ -1,15 +1,15 @@
-"""Tests for hippocampus.tools.tree_gen — directory structure parsing."""
+"""Tests for hippos.tools.tree_gen — directory structure parsing."""
 
 from __future__ import annotations
 
 from pathlib import Path
 
-from hippocampus.tools.tree_gen import (
+from hippos.tools.tree_gen import (
     _is_dir_entry,
     _parse_indent,
     parse_directory_structure,
 )
-from hippocampus.types import TreeNode
+from hippos.types import TreeNode
 
 
 class TestParseIndent:
@@ -93,7 +93,7 @@ class TestParseDirectoryStructure:
 
     def test_runtime_artifacts_are_filtered(self):
         text = (
-            ".hippocampus/\n"
+            ".hippos/\n"
             "  tree.json\n"
             "llm-proxy/\n"
             "  latest-context.json\n"
@@ -104,7 +104,7 @@ class TestParseDirectoryStructure:
         )
         root = parse_directory_structure(text)
         names = [child.name for child in root.children]
-        assert ".hippocampus" not in names
+        assert ".hippos" not in names
         assert "opencode.json" not in names
         assert names == ["llm-proxy"]
         llm_proxy = root.children[0]

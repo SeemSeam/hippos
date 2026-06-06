@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from hippocampus.tools.architect import (
+from hippos.tools.architect import (
     LLMAnalyzer,
     RuleEngine,
     run_architect_audit,
@@ -10,11 +10,11 @@ from hippocampus.tools.architect import (
 
 
 def test_architect_facade_exports_split_symbols() -> None:
-    assert RuleEngine.__module__ == "hippocampus.tools.architect.architect_rules"
-    assert LLMAnalyzer.__module__ == "hippocampus.tools.architect.architect_llm"
-    assert run_architect_audit.__module__ == "hippocampus.tools.architect.architect_runtime"
-    assert run_architect_review.__module__ == "hippocampus.tools.architect.architect_runtime"
-    assert run_architect_plan.__module__ == "hippocampus.tools.architect.architect_runtime"
+    assert RuleEngine.__module__ == "hippos.tools.architect.architect_rules"
+    assert LLMAnalyzer.__module__ == "hippos.tools.architect.architect_llm"
+    assert run_architect_audit.__module__ == "hippos.tools.architect.architect_runtime"
+    assert run_architect_review.__module__ == "hippos.tools.architect.architect_runtime"
+    assert run_architect_plan.__module__ == "hippos.tools.architect.architect_runtime"
 
 
 def test_rule_engine_still_runs_after_split() -> None:

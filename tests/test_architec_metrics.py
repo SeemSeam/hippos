@@ -5,8 +5,8 @@ from pathlib import Path
 import click
 from click.testing import CliRunner
 
-from hippocampus.cli.pipeline_command_builders import build_generate_command, build_run_command
-from hippocampus.integration.architec_metrics import (
+from hippos.cli.pipeline_command_builders import build_generate_command, build_run_command
+from hippos.integration.architec_metrics import (
     ArchitecMetricsUnavailable,
     generate_architec_metrics_artifact,
 )
@@ -19,7 +19,7 @@ def test_generate_architec_metrics_artifact_success(tmp_path, monkeypatch):
     rubric.write_text("{}\n", encoding="utf-8")
 
     monkeypatch.setattr(
-        "hippocampus.integration.architec_metrics._resolve_architec_tooling",
+        "hippos.integration.architec_metrics._resolve_architec_tooling",
         lambda root: (script, rubric),
     )
 
@@ -35,7 +35,7 @@ def test_generate_architec_metrics_artifact_success(tmp_path, monkeypatch):
 
         return Result()
 
-    monkeypatch.setattr("hippocampus.integration.architec_metrics.subprocess.run", fake_run)
+    monkeypatch.setattr("hippos.integration.architec_metrics.subprocess.run", fake_run)
 
     status = generate_architec_metrics_artifact(tmp_path)
 
@@ -49,7 +49,7 @@ def test_generate_architec_metrics_artifact_skips_when_architec_missing(tmp_path
         raise ArchitecMetricsUnavailable("architec 未安装，跳过 architect-metrics.json 生成。")
 
     monkeypatch.setattr(
-        "hippocampus.integration.architec_metrics._resolve_architec_tooling",
+        "hippos.integration.architec_metrics._resolve_architec_tooling",
         fail,
     )
 
@@ -108,18 +108,18 @@ def test_generate_command_no_longer_generates_architec_metrics_artifact(tmp_path
         return {"snapshot_id": "snap-1"}
 
     def fake_viz(out, verbose=False):
-        path = out / "hippocampus-viz.html"
+        path = out / "hippos-viz.html"
         path.write_text("<html></html>\n", encoding="utf-8")
         return path
 
-    monkeypatch.setattr("hippocampus.tools.snapshot.save_snapshot", fake_snapshot)
-    monkeypatch.setattr("hippocampus.viz.generator.generate_viz_html", fake_viz)
+    monkeypatch.setattr("hippos.tools.snapshot.save_snapshot", fake_snapshot)
+    monkeypatch.setattr("hippos.viz.generator.generate_viz_html", fake_viz)
     monkeypatch.setattr(
-        "hippocampus.cli.pipeline_command_builders.write_bundle_state",
+        "hippos.cli.pipeline_command_builders.write_bundle_state",
         lambda _target: None,
     )
     monkeypatch.setattr(
-        "hippocampus.cli.pipeline_command_builders._require_index_llm",
+        "hippos.cli.pipeline_command_builders._require_index_llm",
         lambda cfg: None,
     )
 

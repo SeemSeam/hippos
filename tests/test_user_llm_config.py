@@ -2,10 +2,10 @@ from pathlib import Path
 
 import yaml
 
-from hippocampus.user_llm_config import (
-    HIPPOCAMPUS_LLM_CONFIG_NAME,
+from hippos.user_llm_config import (
+    HIPPOS_LLM_CONFIG_NAME,
     build_user_llm_config,
-    hippocampus_user_config_dir,
+    hippos_user_config_dir,
     load_user_llm_config,
     resolve_user_llm_config_file,
     write_user_llm_config,
@@ -53,20 +53,20 @@ def _write_gateway_user_config(
 
 
 def test_user_config_dir_env_override(monkeypatch, tmp_path: Path):
-    monkeypatch.setenv("HIPPOCAMPUS_USER_CONFIG_DIR", str(tmp_path / "global"))
-    assert hippocampus_user_config_dir() == (tmp_path / "global").resolve()
+    monkeypatch.setenv("HIPPOS_USER_CONFIG_DIR", str(tmp_path / "global"))
+    assert hippos_user_config_dir() == (tmp_path / "global").resolve()
 
 
 def test_resolve_user_llm_config_file_uses_user_dir(monkeypatch, tmp_path: Path):
-    monkeypatch.setenv("HIPPOCAMPUS_USER_CONFIG_DIR", str(tmp_path / "global"))
+    monkeypatch.setenv("HIPPOS_USER_CONFIG_DIR", str(tmp_path / "global"))
     assert resolve_user_llm_config_file() == (
-        tmp_path / "global" / HIPPOCAMPUS_LLM_CONFIG_NAME
+        tmp_path / "global" / HIPPOS_LLM_CONFIG_NAME
     ).resolve()
 
 
 def test_write_and_load_user_llm_config(tmp_path: Path, monkeypatch):
     _write_gateway_user_config(tmp_path, monkeypatch)
-    cfg_path = tmp_path / HIPPOCAMPUS_LLM_CONFIG_NAME
+    cfg_path = tmp_path / HIPPOS_LLM_CONFIG_NAME
     write_user_llm_config(
         cfg_path,
         model="openai/gpt-4o-mini",
@@ -92,8 +92,8 @@ def test_write_and_load_user_llm_config(tmp_path: Path, monkeypatch):
 
 
 def test_write_and_load_user_llm_config_with_env_refs(tmp_path: Path, monkeypatch):
-    monkeypatch.setenv("hippocampus_llm_main_url", "https://backend.example/v1")
-    monkeypatch.setenv("hippocampus_llm_main_api_key", "secret-key")
+    monkeypatch.setenv("hippos_llm_main_url", "https://backend.example/v1")
+    monkeypatch.setenv("hippos_llm_main_api_key", "secret-key")
     gateway_path = tmp_path / ".llmgateway-user" / "config.yaml"
     monkeypatch.setenv("LLMGATEWAY_USER_CONFIG_DIR", str(gateway_path.parent))
     gateway_path.parent.mkdir(parents=True, exist_ok=True)
@@ -103,8 +103,8 @@ version: 1
 provider:
   provider_type: glm
   api_style: openai_responses
-  base_url: ${hippocampus_llm_main_url}
-  api_key: ${hippocampus_llm_main_api_key}
+  base_url: ${hippos_llm_main_url}
+  api_key: ${hippos_llm_main_api_key}
 settings:
   strong_model: openai/gpt-4.1
   weak_model: openai/gpt-4o-mini
@@ -115,7 +115,7 @@ settings:
         + "\n",
         encoding="utf-8",
     )
-    cfg_path = tmp_path / HIPPOCAMPUS_LLM_CONFIG_NAME
+    cfg_path = tmp_path / HIPPOS_LLM_CONFIG_NAME
     cfg_path.write_text(
         """
 version: 1
@@ -161,7 +161,7 @@ def test_build_user_llm_config_supports_weak_and_strong_models(tmp_path: Path, m
     )
     assert payload["tasks"]["phase_1"]["tier"] == "weak"
     assert payload["tasks"]["phase_2a"]["tier"] == "strong"
-    cfg_path = tmp_path / HIPPOCAMPUS_LLM_CONFIG_NAME
+    cfg_path = tmp_path / HIPPOS_LLM_CONFIG_NAME
     cfg_path.write_text(
         yaml.safe_dump(payload, default_flow_style=False, allow_unicode=True, sort_keys=False),
         encoding="utf-8",
@@ -178,7 +178,7 @@ def test_build_user_llm_config_supports_weak_and_strong_models(tmp_path: Path, m
 
 def test_load_user_llm_config_uses_gateway_model_pair(tmp_path: Path, monkeypatch):
     _write_gateway_user_config(tmp_path, monkeypatch, max_concurrent=16)
-    cfg_path = tmp_path / HIPPOCAMPUS_LLM_CONFIG_NAME
+    cfg_path = tmp_path / HIPPOS_LLM_CONFIG_NAME
     cfg_path.write_text(
         """
 version: 1

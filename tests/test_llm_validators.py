@@ -1,10 +1,10 @@
-"""Tests for hippocampus.llm.validators — output validation for each pipeline phase."""
+"""Tests for hippos.llm.validators — output validation for each pipeline phase."""
 
 from __future__ import annotations
 
 import json
 
-from hippocampus.llm.validators import (
+from hippos.llm.validators import (
     _try_parse_json,
     validate_phase_1,
     validate_phase_2a,

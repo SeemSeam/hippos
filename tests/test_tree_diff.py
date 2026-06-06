@@ -1,9 +1,9 @@
-"""Tests for hippocampus.tools.tree_diff — tree comparison logic."""
+"""Tests for hippos.tools.tree_diff — tree comparison logic."""
 
 from __future__ import annotations
 
-from hippocampus.tools.tree_diff import _flatten_tree, compute_diff
-from hippocampus.types import DiffEntry, TreeNode
+from hippos.tools.tree_diff import _flatten_tree, compute_diff
+from hippos.types import DiffEntry, TreeNode
 
 
 class TestFlattenTree:

@@ -1,4 +1,4 @@
-"""Shared test fixtures for hippocampus system tests."""
+"""Shared test fixtures for hippos system tests."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 import pytest
-from hippocampus.resources import copy_packaged_queries
+from hippos.resources import copy_packaged_queries
 
 # Target codebase for system tests
 TARGET_CODEBASE = Path.home() / "yunwei" / "claude_codex"
@@ -22,7 +22,7 @@ def target_path():
 @pytest.fixture
 def tmp_output(tmp_path):
     """Temporary output directory for test artifacts."""
-    out = tmp_path / ".hippocampus"
+    out = tmp_path / ".hippos"
     out.mkdir()
     return out
 

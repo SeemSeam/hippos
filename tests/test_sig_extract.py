@@ -1,4 +1,4 @@
-"""Tests for hippocampus.tools.sig_extract — system tests against real codebase."""
+"""Tests for hippos.tools.sig_extract — system tests against real codebase."""
 
 from __future__ import annotations
 
@@ -7,12 +7,12 @@ from pathlib import Path
 
 import pytest
 
-from hippocampus.tools.sig_extract import (
+from hippos.tools.sig_extract import (
     _collect_source_files,
     _infer_parent,
     run_sig_extract,
 )
-from hippocampus.types import CodeSignaturesDoc
+from hippos.types import CodeSignaturesDoc
 
 
 class TestCollectSourceFiles:
@@ -42,7 +42,7 @@ class TestCollectSourceFiles:
             assert not any(p.startswith(".") for p in parts)
 
     def test_only_supported_languages(self, target_path):
-        from hippocampus.parsers.lang_map import detect_file_language
+        from hippos.parsers.lang_map import detect_file_language
         files = _collect_source_files(target_path)
         for f in files:
             assert detect_file_language(f) is not None
@@ -65,7 +65,7 @@ class TestCollectSourceFiles:
 
 class TestInferParent:
     def test_method_gets_parent_class(self):
-        from hippocampus.parsers.ts_extract import Tag
+        from hippos.parsers.ts_extract import Tag
         tags = [
             Tag(rel_fname="f.py", fname="f.py", name="MyClass",
                 kind="def", line=0, tag_type="class"),
@@ -76,7 +76,7 @@ class TestInferParent:
         assert parent == "MyClass"
 
     def test_no_parent_for_top_level(self):
-        from hippocampus.parsers.ts_extract import Tag
+        from hippos.parsers.ts_extract import Tag
         tags = [
             Tag(rel_fname="f.py", fname="f.py", name="standalone",
                 kind="def", line=0, tag_type="function"),
@@ -91,12 +91,12 @@ class TestRunSigExtract:
     def test_run_against_real_codebase(self, target_path, tmp_output, queries_dir):
         """Run sig_extract on claude_codex and validate output schema."""
         # Ensure queries are in the expected location
-        hippo_dir = target_path / ".hippocampus"
+        hippos_dir = target_path / ".hippos"
         needs_cleanup = False
-        if not hippo_dir.exists():
-            hippo_dir.mkdir()
+        if not hippos_dir.exists():
+            hippos_dir.mkdir()
             needs_cleanup = True
-        q_dst = hippo_dir / "queries"
+        q_dst = hippos_dir / "queries"
         if not q_dst.exists():
             shutil.copytree(queries_dir, q_dst)
 
@@ -104,7 +104,7 @@ class TestRunSigExtract:
             doc = run_sig_extract(target_path, tmp_output, verbose=False)
         finally:
             if needs_cleanup:
-                shutil.rmtree(hippo_dir, ignore_errors=True)
+                shutil.rmtree(hippos_dir, ignore_errors=True)
 
         # Validate return type
         assert isinstance(doc, CodeSignaturesDoc)
@@ -128,12 +128,12 @@ class TestRunSigExtract:
 
     def test_output_file_written(self, target_path, tmp_output, queries_dir):
         """Verify JSON output file is created."""
-        hippo_dir = target_path / ".hippocampus"
+        hippos_dir = target_path / ".hippos"
         needs_cleanup = False
-        if not hippo_dir.exists():
-            hippo_dir.mkdir()
+        if not hippos_dir.exists():
+            hippos_dir.mkdir()
             needs_cleanup = True
-        q_dst = hippo_dir / "queries"
+        q_dst = hippos_dir / "queries"
         if not q_dst.exists():
             shutil.copytree(queries_dir, q_dst)
 
@@ -141,9 +141,9 @@ class TestRunSigExtract:
             run_sig_extract(target_path, tmp_output, verbose=False)
         finally:
             if needs_cleanup:
-                shutil.rmtree(hippo_dir, ignore_errors=True)
+                shutil.rmtree(hippos_dir, ignore_errors=True)
 
-        from hippocampus.constants import CODE_SIGNATURES_FILE
+        from hippos.constants import CODE_SIGNATURES_FILE
         out_file = tmp_output / CODE_SIGNATURES_FILE
         assert out_file.exists()
 

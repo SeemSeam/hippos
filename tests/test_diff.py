@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from hippocampus.query.diff import (
+from hippos.query.diff import (
     _diff_files,
     _diff_modules,
     _diff_stats,

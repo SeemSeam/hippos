@@ -1,11 +1,11 @@
-"""Tests for hippocampus.utils module."""
+"""Tests for hippos.utils module."""
 
 from __future__ import annotations
 
 import json
 from pathlib import Path
 
-from hippocampus.utils import (
+from hippos.utils import (
     estimate_tokens,
     is_hidden,
     read_json,

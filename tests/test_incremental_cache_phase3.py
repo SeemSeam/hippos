@@ -7,7 +7,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from hippocampus.tools.index_gen import phase_3
+from hippos.tools.index.index_gen import phase_3
 
 from incremental_cache_helpers import (
     _phase3_module_input_hash,
@@ -22,7 +22,7 @@ from incremental_cache_helpers import (
 class TestPhase3Incremental:
     @pytest.fixture
     def output_dir(self, tmp_path):
-        out = tmp_path / ".hippocampus"
+        out = tmp_path / ".hippos"
         out.mkdir()
         return out
 
@@ -66,7 +66,7 @@ class TestPhase3Incremental:
             "scale": {"files": 4, "modules": 2, "primary_lang": "python"},
         }
         with patch(
-            "hippocampus.tools.index.index_gen_phase3_runtime.create_llm_gateway"
+            "hippos.tools.index.index_gen_phase3_runtime.create_llm_gateway"
         ) as MockGateway:
             mock_llm = MagicMock()
             mock_llm.run_json_task_with_retry = AsyncMock(
@@ -123,7 +123,7 @@ class TestPhase3Incremental:
             "architecture": "modular",
             "scale": {"files": 4, "modules": 2, "primary_lang": "python"},
         }
-        with patch("hippocampus.tools.index.index_gen_phase3_runtime.create_llm_gateway") as MockGateway:
+        with patch("hippos.tools.index.index_gen_phase3_runtime.create_llm_gateway") as MockGateway:
             mock_llm = MagicMock()
             mock_llm.run_json_task_with_retry = AsyncMock(
                 return_value=type("Result", (), {"data": mock_3b_result, "errors": []})()
@@ -169,7 +169,7 @@ class TestPhase3Incremental:
             "architecture": "modular",
             "scale": {"files": 4, "modules": 2, "primary_lang": "python"},
         }
-        with patch("hippocampus.tools.index.index_gen_phase3_runtime.create_llm_gateway") as MockGateway:
+        with patch("hippos.tools.index.index_gen_phase3_runtime.create_llm_gateway") as MockGateway:
             mock_llm = MagicMock()
             mock_llm.run_json_task_with_retry = AsyncMock(
                 return_value=type("Result", (), {"data": mock_3b_result, "errors": []})()

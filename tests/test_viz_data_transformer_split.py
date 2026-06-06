@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from hippocampus.viz import data_transformer as dt
+from hippos.viz import data_transformer as dt
 
 
 def _sample_index() -> dict:

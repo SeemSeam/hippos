@@ -1,4 +1,4 @@
-"""Tests for hippocampus.config module."""
+"""Tests for hippos.config module."""
 
 from __future__ import annotations
 
@@ -6,8 +6,8 @@ from pathlib import Path
 
 import yaml
 
-from hippocampus.config import (
-    HippoConfig,
+from hippos.config import (
+    HipposConfig,
     LLMConfig,
     LLMPhaseModels,
     LLMTemperature,
@@ -76,9 +76,9 @@ class TestDefaultConfigYaml:
 class TestLoadConfig:
     def test_load_none_returns_defaults(self):
         cfg = load_config(None)
-        assert isinstance(cfg, HippoConfig)
+        assert isinstance(cfg, HipposConfig)
         assert cfg.target == "."
-        assert cfg.output_dir == ".hippocampus"
+        assert cfg.output_dir == ".hippos"
 
     def test_load_from_file(self, tmp_path):
         cfg_file = tmp_path / "config.yaml"
@@ -92,11 +92,11 @@ class TestLoadConfig:
 
     def test_load_missing_file_returns_defaults(self, tmp_path):
         cfg = load_config(tmp_path / "nonexistent.yaml")
-        assert isinstance(cfg, HippoConfig)
+        assert isinstance(cfg, HipposConfig)
 
     def test_load_from_user_global_llm_config(self, tmp_path: Path, monkeypatch):
         user_dir = tmp_path / "user"
-        monkeypatch.setenv("HIPPOCAMPUS_USER_CONFIG_DIR", str(user_dir))
+        monkeypatch.setenv("HIPPOS_USER_CONFIG_DIR", str(user_dir))
         _write_gateway_user_config(tmp_path, monkeypatch, max_concurrent=32)
         (user_dir / "config.yaml").parent.mkdir(parents=True)
         (user_dir / "config.yaml").write_text(
@@ -126,7 +126,7 @@ class TestLoadConfig:
         project = tmp_path / "project"
         project.mkdir()
         user_dir = tmp_path / "user"
-        monkeypatch.setenv("HIPPOCAMPUS_USER_CONFIG_DIR", str(user_dir))
+        monkeypatch.setenv("HIPPOS_USER_CONFIG_DIR", str(user_dir))
         _write_gateway_user_config(tmp_path, monkeypatch)
         (user_dir / "config.yaml").parent.mkdir(parents=True)
         (user_dir / "config.yaml").write_text(
@@ -134,7 +134,7 @@ class TestLoadConfig:
             encoding="utf-8",
         )
 
-        cfg_file = project / ".hippocampus" / "config.yaml"
+        cfg_file = project / ".hippos" / "config.yaml"
         cfg_file.parent.mkdir()
         cfg_file.write_text(
             yaml.dump({"llm": {"base_url": "https://project.example/v1", "api_key": "project-key"}}),
@@ -145,9 +145,9 @@ class TestLoadConfig:
         assert cfg.llm.base_url == "https://project.example/v1"
         assert cfg.llm.api_key == "project-key"
 
-    def test_load_from_hippocampus_user_llm_config(self, tmp_path: Path, monkeypatch):
-        user_dir = tmp_path / "hippo-user"
-        monkeypatch.setenv("HIPPOCAMPUS_USER_CONFIG_DIR", str(user_dir))
+    def test_load_from_hippos_user_llm_config(self, tmp_path: Path, monkeypatch):
+        user_dir = tmp_path / "hippos-user"
+        monkeypatch.setenv("HIPPOS_USER_CONFIG_DIR", str(user_dir))
         _write_gateway_user_config(
             tmp_path,
             monkeypatch,
@@ -176,8 +176,8 @@ class TestLoadConfig:
         assert cfg.llm.phase_tiers.architect == "strong"
 
     def test_gateway_timeout_floor_applies_from_user_runtime(self, tmp_path: Path, monkeypatch):
-        user_dir = tmp_path / "hippo-user"
-        monkeypatch.setenv("HIPPOCAMPUS_USER_CONFIG_DIR", str(user_dir))
+        user_dir = tmp_path / "hippos-user"
+        monkeypatch.setenv("HIPPOS_USER_CONFIG_DIR", str(user_dir))
         _write_gateway_user_config(
             tmp_path,
             monkeypatch,
@@ -202,8 +202,8 @@ class TestLoadConfig:
         assert cfg.llm.timeout == 120
 
     def test_explicit_route_still_uses_gateway_timeout_floor(self, tmp_path: Path, monkeypatch):
-        user_dir = tmp_path / "hippo-user"
-        monkeypatch.setenv("HIPPOCAMPUS_USER_CONFIG_DIR", str(user_dir))
+        user_dir = tmp_path / "hippos-user"
+        monkeypatch.setenv("HIPPOS_USER_CONFIG_DIR", str(user_dir))
         _write_gateway_user_config(
             tmp_path,
             monkeypatch,
@@ -226,7 +226,7 @@ class TestLoadConfig:
             encoding="utf-8",
         )
 
-        cfg_file = project / ".hippocampus" / "config.yaml"
+        cfg_file = project / ".hippos" / "config.yaml"
         cfg_file.parent.mkdir()
         cfg_file.write_text(
             yaml.dump(
@@ -246,8 +246,8 @@ class TestLoadConfig:
         assert cfg.llm.timeout == 120
 
     def test_explicit_timeout_above_gateway_timeout_is_kept(self, tmp_path: Path, monkeypatch):
-        user_dir = tmp_path / "hippo-user"
-        monkeypatch.setenv("HIPPOCAMPUS_USER_CONFIG_DIR", str(user_dir))
+        user_dir = tmp_path / "hippos-user"
+        monkeypatch.setenv("HIPPOS_USER_CONFIG_DIR", str(user_dir))
         _write_gateway_user_config(
             tmp_path,
             monkeypatch,
@@ -270,7 +270,7 @@ class TestLoadConfig:
             encoding="utf-8",
         )
 
-        cfg_file = project / ".hippocampus" / "config.yaml"
+        cfg_file = project / ".hippos" / "config.yaml"
         cfg_file.parent.mkdir()
         cfg_file.write_text(
             yaml.dump(
@@ -287,8 +287,8 @@ class TestLoadConfig:
         assert cfg.llm.timeout == 180
 
     def test_project_default_llm_values_do_not_override_user_llm_config(self, tmp_path: Path, monkeypatch):
-        user_dir = tmp_path / "hippo-user"
-        monkeypatch.setenv("HIPPOCAMPUS_USER_CONFIG_DIR", str(user_dir))
+        user_dir = tmp_path / "hippos-user"
+        monkeypatch.setenv("HIPPOS_USER_CONFIG_DIR", str(user_dir))
         _write_gateway_user_config(
             tmp_path,
             monkeypatch,
@@ -311,7 +311,7 @@ class TestLoadConfig:
             encoding="utf-8",
         )
 
-        cfg_file = project / ".hippocampus" / "config.yaml"
+        cfg_file = project / ".hippos" / "config.yaml"
         cfg_file.parent.mkdir()
         cfg_file.write_text(default_config_yaml(), encoding="utf-8")
 
@@ -327,10 +327,10 @@ class TestLoadConfig:
         assert cfg.llm.phase_tiers.architect == "strong"
 
     def test_auto_bind_from_gateway_monorepo_layout(self, tmp_path: Path, monkeypatch):
-        monkeypatch.setenv("HIPPOCAMPUS_USER_CONFIG_DIR", str(tmp_path / "hippo-user"))
+        monkeypatch.setenv("HIPPOS_USER_CONFIG_DIR", str(tmp_path / "hippos-user"))
         project = tmp_path / "inner"
         project.mkdir()
-        cfg_file = project / ".hippocampus" / "config.yaml"
+        cfg_file = project / ".hippos" / "config.yaml"
         cfg_file.parent.mkdir()
         cfg_file.write_text("target: .\n")
 
@@ -371,10 +371,10 @@ class TestLoadConfig:
         assert cfg.llm.phase_models.phase_3a == "gpt-backend-merger"
 
     def test_explicit_llm_route_not_overridden(self, tmp_path: Path, monkeypatch):
-        monkeypatch.setenv("HIPPOCAMPUS_USER_CONFIG_DIR", str(tmp_path / "hippo-user"))
+        monkeypatch.setenv("HIPPOS_USER_CONFIG_DIR", str(tmp_path / "hippos-user"))
         project = tmp_path / "inner"
         project.mkdir()
-        cfg_file = project / ".hippocampus" / "config.yaml"
+        cfg_file = project / ".hippos" / "config.yaml"
         cfg_file.parent.mkdir()
         cfg_file.write_text(
             yaml.dump(
@@ -405,16 +405,16 @@ class TestLoadConfig:
         assert cfg.llm.api_key == "manual-key"
 
 
-class TestHippoConfig:
+class TestHipposConfig:
     def test_defaults(self):
-        cfg = HippoConfig()
+        cfg = HipposConfig()
         assert cfg.trim_budget == 10000
         assert cfg.structure_prompt_max_chars == 10000
         assert cfg.structure_prompt_llm_enhance is False
         assert cfg.structure_prompt_archetype is None
 
     def test_llm_defaults(self):
-        cfg = HippoConfig()
+        cfg = HipposConfig()
         assert cfg.llm.max_concurrent == 12
         assert cfg.llm.retry_max == 3
         assert cfg.llm.timeout == 90
@@ -435,13 +435,13 @@ class TestLLMTemperature:
 
 
 def test_require_llm_configured_reports_gateway_parse_issue(tmp_path: Path, monkeypatch) -> None:
-    hippo_user_dir = tmp_path / "hippo-user"
-    monkeypatch.setenv("HIPPOCAMPUS_USER_CONFIG_DIR", str(hippo_user_dir))
+    hippos_user_dir = tmp_path / "hippos-user"
+    monkeypatch.setenv("HIPPOS_USER_CONFIG_DIR", str(hippos_user_dir))
     gw_dir = tmp_path / "gateway-user"
     monkeypatch.setenv("LLMGATEWAY_USER_CONFIG_DIR", str(gw_dir))
 
-    (hippo_user_dir / "config.yaml").parent.mkdir(parents=True, exist_ok=True)
-    (hippo_user_dir / "config.yaml").write_text(
+    (hippos_user_dir / "config.yaml").parent.mkdir(parents=True, exist_ok=True)
+    (hippos_user_dir / "config.yaml").write_text(
         yaml.safe_dump(
             {
                 "version": 1,
@@ -469,4 +469,4 @@ def test_require_llm_configured_reports_gateway_parse_issue(tmp_path: Path, monk
     assert "Detected configuration issue:" in message
     assert str((gw_dir / "config.yaml").resolve()) in message
     assert "cannot be parsed" in message
-    assert "Check ~/.llmgateway/config.yaml and ~/.hippocampus/config.yaml." in message
+    assert "Check ~/.llmgateway/config.yaml and ~/.hippos/config.yaml." in message

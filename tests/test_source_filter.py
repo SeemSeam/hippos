@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from hippocampus.source_filter import (
+from hippos.source_filter import (
     build_file_manifest,
     classify_project_file,
     should_include_architecture_file,
@@ -56,11 +56,11 @@ def test_build_file_manifest_keeps_source_and_test_but_skips_hidden_runtime(tmp_
     (tmp_path / "src").mkdir()
     (tmp_path / "tests").mkdir()
     (tmp_path / ".venv" / "lib").mkdir(parents=True)
-    (tmp_path / ".hippocampus").mkdir()
+    (tmp_path / ".hippos").mkdir()
     (tmp_path / "src" / "app.py").write_text("def run():\n    return 1\n", encoding="utf-8")
     (tmp_path / "tests" / "test_app.py").write_text("def test_run():\n    assert True\n", encoding="utf-8")
     (tmp_path / ".venv" / "lib" / "noise.py").write_text("x = 1\n", encoding="utf-8")
-    (tmp_path / ".hippocampus" / "tree.json").write_text("{}", encoding="utf-8")
+    (tmp_path / ".hippos" / "tree.json").write_text("{}", encoding="utf-8")
 
     manifest = build_file_manifest(tmp_path)
     files = manifest["files"]
@@ -70,7 +70,7 @@ def test_build_file_manifest_keeps_source_and_test_but_skips_hidden_runtime(tmp_
     assert "tests/test_app.py" in files
     assert files["tests/test_app.py"]["kind"] == "test"
     assert ".venv/lib/noise.py" not in files
-    assert ".hippocampus/tree.json" not in files
+    assert ".hippos/tree.json" not in files
 
 
 def test_build_file_manifest_includes_extensionless_code_but_skips_doc_and_binary(tmp_path: Path) -> None:
@@ -103,7 +103,7 @@ def test_should_include_tree_path_excludes_tests_docs_and_build() -> None:
     assert should_include_tree_path(Path("dist/bundle.js")) is False
 
 
-def test_build_file_manifest_applies_shared_and_hippo_rules(tmp_path: Path) -> None:
+def test_build_file_manifest_applies_shared_and_hippos_rules(tmp_path: Path) -> None:
     (tmp_path / "src" / "keep").mkdir(parents=True)
     (tmp_path / "src" / "legacy").mkdir(parents=True)
     (tmp_path / "tmp").mkdir(parents=True)
@@ -117,7 +117,7 @@ def test_build_file_manifest_applies_shared_and_hippo_rules(tmp_path: Path) -> N
                 "[shared]",
                 'ignore_paths = ["tmp"]',
                 "",
-                "[hippo]",
+                "[hippos]",
                 'ignore_paths = ["src/legacy"]',
                 'ignore_globs = ["skip_*.py"]',
             ]
@@ -135,11 +135,11 @@ def test_build_file_manifest_applies_shared_and_hippo_rules(tmp_path: Path) -> N
     assert "skip_me.py" not in files
 
 
-def test_should_include_architecture_file_applies_hippo_rule_file(tmp_path: Path) -> None:
+def test_should_include_architecture_file_applies_hippos_rule_file(tmp_path: Path) -> None:
     (tmp_path / ".architecture-rules.toml").write_text(
         "\n".join(
             [
-                "[hippo]",
+                "[hippos]",
                 'ignore_extensions = [".gen"]',
             ]
         )
@@ -147,9 +147,9 @@ def test_should_include_architecture_file_applies_hippo_rule_file(tmp_path: Path
         encoding="utf-8",
     )
 
-    from hippocampus.architecture_rules import load_hippo_rules
+    from hippos.architecture_rules import load_hippos_rules
 
-    rules = load_hippo_rules(tmp_path)
+    rules = load_hippos_rules(tmp_path)
 
     assert should_include_architecture_file("src/app.py", rules=rules) is True
     assert should_include_architecture_file("src/schema.gen", rules=rules) is False

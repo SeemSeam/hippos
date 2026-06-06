@@ -16,7 +16,7 @@ def test_install_script_help():
     )
     assert result.returncode == 0
     assert "Usage: ./install.sh" in result.stdout
-    assert "~/.hippocampus/config.yaml" in result.stdout
+    assert "~/.hippos/config.yaml" in result.stdout
     assert "~/.llmgateway/config.yaml" in result.stdout
     assert "task-tier routing" in result.stdout
     assert "manual gateway config path" in result.stdout

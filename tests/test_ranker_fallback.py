@@ -12,8 +12,8 @@ def test_graph_ranker_fallback_monotonicity():
     high-score files can fit in larger budgets but not smaller ones. This test
     verifies that the behavior is at least reasonable and deterministic.
     """
-    from hippocampus.tools.ranker import GraphRanker
-    from hippocampus.tools.trimmer import trim_compress_with_ranker
+    from hippos.tools.ranker import GraphRanker
+    from hippos.tools.trimmer import trim_compress_with_ranker
 
     # Create a test dataset with more realistic file sizes
     # (avoiding extreme cases where one file = entire budget)
@@ -68,7 +68,7 @@ def test_graph_ranker_fallback_monotonicity():
 
 def test_graph_ranker_sparse_graph_fallback():
     """Test that GraphRanker correctly falls back to HeuristicRanker for sparse graphs."""
-    from hippocampus.tools.ranker import GraphRanker
+    from hippos.tools.ranker import GraphRanker
     
     # Create files with no dependencies (sparse graph)
     files = [
@@ -90,7 +90,7 @@ def test_graph_ranker_sparse_graph_fallback():
 
 def test_heuristic_ranker_deterministic():
     """Test that HeuristicRanker produces deterministic results."""
-    from hippocampus.tools.ranker import HeuristicRanker
+    from hippos.tools.ranker import HeuristicRanker
     
     files = ["src/core.py", "lib/utils.py", "tests/test_core.py"]
     ranker = HeuristicRanker()

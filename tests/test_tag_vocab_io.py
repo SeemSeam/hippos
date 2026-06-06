@@ -1,8 +1,8 @@
-"""IO tests for hippocampus.tag_vocab."""
+"""IO tests for hippos.tag_vocab."""
 
 from __future__ import annotations
 
-from hippocampus.tag_vocab import TagVocab, default_vocab, load_vocab, save_vocab
+from hippos.tag_vocab import TagVocab, default_vocab, load_vocab, save_vocab
 
 
 class TestVocabIO:

@@ -6,7 +6,7 @@ import pytest
 
 def test_repomap_adapter_availability():
     """Test that check_repomap_available() works correctly."""
-    from hippocampus.tools.repomap_adapter import check_repomap_available
+    from hippos.tools.repomap_adapter import check_repomap_available
     
     available, error = check_repomap_available()
     
@@ -19,16 +19,16 @@ def test_repomap_adapter_availability():
         assert error == ""
 
 
-def test_hippo_io_interface():
-    """Test that HippoIO implements required Aider IO interface."""
-    from hippocampus.tools.ranker import is_repomap_available
+def test_hippos_io_interface():
+    """Test that HipposIO implements required Aider IO interface."""
+    from hippos.tools.ranker import is_repomap_available
     
     if not is_repomap_available():
         pytest.skip("RepoMap dependencies not available")
     
-    from hippocampus.tools.repomap_adapter import HippoIO
+    from hippos.tools.repomap_adapter import HipposIO
     
-    io = HippoIO(verbose=False)
+    io = HipposIO(verbose=False)
     
     # Check required methods exist
     assert hasattr(io, 'read_text')
@@ -46,16 +46,16 @@ def test_hippo_io_interface():
     io.tool_output("test output")
 
 
-def test_hippo_model_interface():
-    """Test that HippoModel implements required Aider model interface."""
-    from hippocampus.tools.ranker import is_repomap_available
+def test_hippos_model_interface():
+    """Test that HipposModel implements required Aider model interface."""
+    from hippos.tools.ranker import is_repomap_available
     
     if not is_repomap_available():
         pytest.skip("RepoMap dependencies not available")
     
-    from hippocampus.tools.repomap_adapter import HippoModel
+    from hippos.tools.repomap_adapter import HipposModel
     
-    model = HippoModel()
+    model = HipposModel()
     
     # Check required methods exist
     assert hasattr(model, 'token_count')
@@ -66,37 +66,37 @@ def test_hippo_model_interface():
     assert count > 0
 
 
-def test_hippo_repomap_initialization():
-    """Test that HippoRepoMap can be initialized."""
-    from hippocampus.tools.ranker import is_repomap_available
+def test_hippos_repomap_initialization():
+    """Test that HipposRepoMap can be initialized."""
+    from hippos.tools.ranker import is_repomap_available
     
     if not is_repomap_available():
         pytest.skip("RepoMap dependencies not available")
     
-    from hippocampus.tools.repomap_adapter import HippoRepoMap
+    from hippos.tools.repomap_adapter import HipposRepoMap
     
     root = Path.cwd()
-    repomap = HippoRepoMap(root=root, map_tokens=1024, verbose=False)
+    repomap = HipposRepoMap(root=root, map_tokens=1024, verbose=False)
     
     assert repomap.root == root
     assert repomap.verbose is False
 
 
-def test_hippo_repomap_get_ranked_tags():
-    """Test that HippoRepoMap.get_ranked_tags() returns expected format."""
-    from hippocampus.tools.ranker import is_repomap_available
+def test_hippos_repomap_get_ranked_tags():
+    """Test that HipposRepoMap.get_ranked_tags() returns expected format."""
+    from hippos.tools.ranker import is_repomap_available
     
     if not is_repomap_available():
         pytest.skip("RepoMap dependencies not available")
     
-    from hippocampus.tools.repomap_adapter import HippoRepoMap
+    from hippos.tools.repomap_adapter import HipposRepoMap
     
     root = Path.cwd()
-    repomap = HippoRepoMap(root=root, map_tokens=1024, verbose=False)
+    repomap = HipposRepoMap(root=root, map_tokens=1024, verbose=False)
     
     # Test with actual project files
-    chat_files = ["hippocampus/utils.py"]
-    other_files = ["hippocampus/constants.py"]
+    chat_files = ["hippos/utils.py"]
+    other_files = ["hippos/constants.py"]
     
     ranked_tags = repomap.get_ranked_tags(
         chat_files=chat_files,
@@ -119,18 +119,18 @@ def test_hippo_repomap_get_ranked_tags():
 
 def test_repomap_determinism():
     """Test that RepoMap produces deterministic results."""
-    from hippocampus.tools.ranker import is_repomap_available
+    from hippos.tools.ranker import is_repomap_available
     
     if not is_repomap_available():
         pytest.skip("RepoMap dependencies not available")
     
-    from hippocampus.tools.repomap_adapter import HippoRepoMap
+    from hippos.tools.repomap_adapter import HipposRepoMap
     
     root = Path.cwd()
-    repomap = HippoRepoMap(root=root, map_tokens=1024, verbose=False)
+    repomap = HipposRepoMap(root=root, map_tokens=1024, verbose=False)
     
-    chat_files = ["hippocampus/utils.py"]
-    other_files = ["hippocampus/constants.py"]
+    chat_files = ["hippos/utils.py"]
+    other_files = ["hippos/constants.py"]
     
     # Run twice
     result1 = repomap.get_ranked_tags(
@@ -153,19 +153,19 @@ def test_repomap_determinism():
 
 def test_repomap_path_handling():
     """Test that RepoMap correctly handles relative and absolute paths."""
-    from hippocampus.tools.ranker import is_repomap_available
+    from hippos.tools.ranker import is_repomap_available
     
     if not is_repomap_available():
         pytest.skip("RepoMap dependencies not available")
     
-    from hippocampus.tools.repomap_adapter import HippoRepoMap
+    from hippos.tools.repomap_adapter import HipposRepoMap
     
     root = Path.cwd()
-    repomap = HippoRepoMap(root=root, map_tokens=1024, verbose=False)
+    repomap = HipposRepoMap(root=root, map_tokens=1024, verbose=False)
     
     # Test with relative paths (should work)
-    chat_files = ["hippocampus/utils.py"]
-    other_files = ["hippocampus/constants.py"]
+    chat_files = ["hippos/utils.py"]
+    other_files = ["hippos/constants.py"]
     
     result = repomap.get_ranked_tags(
         chat_files=chat_files,
@@ -184,15 +184,15 @@ def test_repomap_empty_input():
     Note: Aider RepoMap has a bug where it raises ZeroDivisionError on empty input.
     This test documents the current behavior.
     """
-    from hippocampus.tools.ranker import is_repomap_available
+    from hippos.tools.ranker import is_repomap_available
 
     if not is_repomap_available():
         pytest.skip("RepoMap dependencies not available")
 
-    from hippocampus.tools.repomap_adapter import HippoRepoMap
+    from hippos.tools.repomap_adapter import HipposRepoMap
 
     root = Path.cwd()
-    repomap = HippoRepoMap(root=root, map_tokens=1024, verbose=False)
+    repomap = HipposRepoMap(root=root, map_tokens=1024, verbose=False)
 
     # Test with empty inputs - currently raises ZeroDivisionError
     with pytest.raises(ZeroDivisionError):

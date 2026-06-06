@@ -1,10 +1,10 @@
-"""Tests for hippo_search query module."""
+"""Tests for hippos_search query module."""
 
 from __future__ import annotations
 
 import pytest
 
-from hippocampus.query.search import (
+from hippos.query.search import (
     _tag_score,
     _pattern_score,
     _combined_score,
@@ -14,10 +14,10 @@ from hippocampus.query.search import (
 
 @pytest.fixture
 def sample_index():
-    """A minimal hippocampus index for testing search."""
+    """A minimal hippos index for testing search."""
     return {
         "version": 2,
-        "schema": "hippocampus-index/v2",
+        "schema": "hippos-index/v2",
         "project": {
             "overview": "A sample project for testing.",
             "scale": {"files": 6, "modules": 3, "primary_lang": "python"},

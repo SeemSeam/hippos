@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from hippocampus.tools.index_gen import phase_2
+from hippos.tools.index.index_gen import phase_2
 
 from incremental_cache_helpers import (
     _content_hash,
@@ -20,7 +20,7 @@ from incremental_cache_helpers import (
 class TestPhase2Incremental:
     @pytest.fixture
     def output_dir(self, tmp_path):
-        out = tmp_path / ".hippocampus"
+        out = tmp_path / ".hippos"
         out.mkdir()
         return out
 
@@ -54,8 +54,8 @@ class TestPhase2Incremental:
             },
         )
 
-        with patch("hippocampus.tools.index_gen._phase2_full") as mock_full:
-            with patch("hippocampus.tools.index_gen._phase2_partial_assign") as mock_partial:
+        with patch("hippos.tools.index.index_gen._phase2_full") as mock_full:
+            with patch("hippos.tools.index.index_gen._phase2_partial_assign") as mock_partial:
                 result_modules, result_ftm = await phase_2(
                     config,
                     phase1_results,
@@ -75,7 +75,7 @@ class TestPhase2Incremental:
         mock_ftm = {"src/main.py": "mod:core"}
 
         with patch(
-            "hippocampus.tools.index_gen._phase2_full",
+            "hippos.tools.index.index_gen._phase2_full",
             new_callable=AsyncMock,
             return_value=(mock_modules, mock_ftm),
         ) as mock_full:
@@ -131,11 +131,11 @@ class TestPhase2Incremental:
 
         phase1["src/main.py"]["desc"] = "Updated entry point"
         with patch(
-            "hippocampus.tools.index_gen._phase2_partial_assign",
+            "hippos.tools.index.index_gen._phase2_partial_assign",
             new_callable=AsyncMock,
         ) as mock_partial:
             with patch(
-                "hippocampus.tools.index_gen._phase2_full",
+                "hippos.tools.index.index_gen._phase2_full",
                 new_callable=AsyncMock,
             ) as mock_full:
                 await phase_2(config, phase1, output_dir=output_dir, verbose=True)

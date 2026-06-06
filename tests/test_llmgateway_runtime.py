@@ -4,7 +4,7 @@ from pathlib import Path
 
 import yaml
 
-from hippocampus.integration.llmgateway_runtime import (
+from hippos.integration.llmgateway_runtime import (
     describe_user_gateway_runtime_issue,
     load_user_gateway_runtime_profile,
     resolve_user_gateway_runtime_file,

@@ -11,9 +11,9 @@ else
   exit 1
 fi
 
-USER_CONFIG_BASE="${HIPPOCAMPUS_USER_CONFIG_DIR:-$HOME/.hippocampus}"
-if [[ -n "${HIPPOCAMPUS_LLM_CONFIG:-}" ]]; then
-  LLM_CONFIG_PATH="${HIPPOCAMPUS_LLM_CONFIG}"
+USER_CONFIG_BASE="${HIPPOS_USER_CONFIG_DIR:-$HOME/.hippos}"
+if [[ -n "${HIPPOS_LLM_CONFIG:-}" ]]; then
+  LLM_CONFIG_PATH="${HIPPOS_LLM_CONFIG}"
 else
   LLM_CONFIG_PATH="$USER_CONFIG_BASE/config.yaml"
 fi
@@ -26,9 +26,7 @@ else
   LLMGATEWAY_CONFIG_PATH="$LLMGATEWAY_USER_CONFIG_BASE/config.yaml"
 fi
 LLMGATEWAY_CONFIG_BASE="$(dirname "$LLMGATEWAY_CONFIG_PATH")"
-
-LLMGATEWAY_LOCAL_PATH="${LLMGATEWAY_LOCAL_PATH:-$ROOT_DIR/../llmgateway}"
-LLMGATEWAY_GIT_URL="${LLMGATEWAY_GIT_URL:-git+https://github.com/bfly123/llmgateway.git@main}"
+LLMGATEWAY_PIP_SPEC="${LLMGATEWAY_PIP_SPEC:-seemseam-llmgateway>=0.1.2}"
 
 cd "$ROOT_DIR"
 
@@ -154,23 +152,23 @@ PY
   if [[ -z "${gateway_timeout:-}" && -n "$loaded_timeout" ]]; then
     gateway_timeout="$loaded_timeout"
   fi
-  if [[ -z "${hippocampus_llm_strong_model:-}" && -n "$loaded_strong_model" ]]; then
-    hippocampus_llm_strong_model="$loaded_strong_model"
+  if [[ -z "${hippos_llm_strong_model:-}" && -n "$loaded_strong_model" ]]; then
+    hippos_llm_strong_model="$loaded_strong_model"
   fi
-  if [[ -z "${hippocampus_llm_weak_model:-}" && -n "$loaded_weak_model" ]]; then
-    hippocampus_llm_weak_model="$loaded_weak_model"
+  if [[ -z "${hippos_llm_weak_model:-}" && -n "$loaded_weak_model" ]]; then
+    hippos_llm_weak_model="$loaded_weak_model"
   fi
-  if [[ -z "${hippocampus_llm_strong_reasoning_effort:-}" && -n "$loaded_strong_effort" ]]; then
-    hippocampus_llm_strong_reasoning_effort="$loaded_strong_effort"
+  if [[ -z "${hippos_llm_strong_reasoning_effort:-}" && -n "$loaded_strong_effort" ]]; then
+    hippos_llm_strong_reasoning_effort="$loaded_strong_effort"
   fi
-  if [[ -z "${hippocampus_llm_weak_reasoning_effort:-}" && -n "$loaded_weak_effort" ]]; then
-    hippocampus_llm_weak_reasoning_effort="$loaded_weak_effort"
+  if [[ -z "${hippos_llm_weak_reasoning_effort:-}" && -n "$loaded_weak_effort" ]]; then
+    hippos_llm_weak_reasoning_effort="$loaded_weak_effort"
   fi
 }
 
 write_gateway_config() {
   mkdir -p "$LLMGATEWAY_CONFIG_BASE"
-  python3 - "$LLMGATEWAY_CONFIG_PATH" "$gateway_provider_type" "$gateway_api_style" "$gateway_base_url" "$gateway_api_key" "$gateway_max_concurrent" "$gateway_model_map_json" "$gateway_retry_max" "$gateway_timeout" "$hippocampus_llm_strong_model" "$hippocampus_llm_weak_model" "$hippocampus_llm_strong_reasoning_effort" "$hippocampus_llm_weak_reasoning_effort" <<'PY'
+  python3 - "$LLMGATEWAY_CONFIG_PATH" "$gateway_provider_type" "$gateway_api_style" "$gateway_base_url" "$gateway_api_key" "$gateway_max_concurrent" "$gateway_model_map_json" "$gateway_retry_max" "$gateway_timeout" "$hippos_llm_strong_model" "$hippos_llm_weak_model" "$hippos_llm_strong_reasoning_effort" "$hippos_llm_weak_reasoning_effort" <<'PY'
 import json
 import sys
 from pathlib import Path
@@ -220,13 +218,13 @@ PY
   chmod 600 "$LLMGATEWAY_CONFIG_PATH"
 }
 
-write_hippo_config() {
+write_hippos_config() {
   mkdir -p "$LLM_CONFIG_BASE"
-  python3 - "$LLM_CONFIG_PATH" "$hippocampus_llm_weak_model" "$hippocampus_llm_strong_model" "$hippocampus_llm_weak_reasoning_effort" "$hippocampus_llm_strong_reasoning_effort" <<'PY'
+  python3 - "$LLM_CONFIG_PATH" "$hippos_llm_weak_model" "$hippos_llm_strong_model" "$hippos_llm_weak_reasoning_effort" "$hippos_llm_strong_reasoning_effort" <<'PY'
 import sys
 from pathlib import Path
 
-from hippocampus.user_llm_config import write_user_llm_config
+from hippos.user_llm_config import write_user_llm_config
 
 write_user_llm_config(
     Path(sys.argv[1]),
@@ -245,7 +243,7 @@ validate_llm_config() {
 import sys
 from pathlib import Path
 
-from hippocampus.config import load_config, require_llm_configured
+from hippos.config import load_config, require_llm_configured
 
 root = Path(sys.argv[1]).resolve()
 cfg = load_config(None, project_root=root)
@@ -258,7 +256,7 @@ PY
 }
 
 print_manual_config_hint() {
-  echo "Hippo model config written to $LLM_CONFIG_PATH"
+  echo "Hippos model config written to $LLM_CONFIG_PATH"
   echo "Still missing gateway route config. Create $LLMGATEWAY_CONFIG_PATH"
   cat <<EOF
 Minimal ~/.llmgateway/config.yaml:
@@ -279,7 +277,7 @@ settings:
   retry_max: 3
   timeout: 30
 
-Minimal ~/.hippocampus/config.yaml:
+Minimal ~/.hippos/config.yaml:
 version: 1
 tasks:
   phase_1:
@@ -297,41 +295,25 @@ tasks:
 EOF
 }
 
-has_llmgateway() {
-  python3 - <<'PY' >/dev/null 2>&1
-import importlib.util
-import sys
-
-sys.exit(0 if importlib.util.find_spec("llmgateway") else 1)
-PY
-}
-
 install_llmgateway() {
-  if has_llmgateway; then
-    return 0
-  fi
-  if [[ -f "$LLMGATEWAY_LOCAL_PATH/pyproject.toml" ]]; then
-    echo "Installing llmgateway from local checkout: $LLMGATEWAY_LOCAL_PATH"
-    python3 -m pip install -e "$LLMGATEWAY_LOCAL_PATH"
-    return 0
-  fi
-  echo "Installing llmgateway from GitHub: $LLMGATEWAY_GIT_URL"
-  python3 -m pip install "$LLMGATEWAY_GIT_URL"
+  echo "Installing Python llmgateway runtime from PyPI: $LLMGATEWAY_PIP_SPEC"
+  python3 -m pip install --upgrade "$LLMGATEWAY_PIP_SPEC"
 }
 
 if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
   cat <<'EOF'
 Usage: ./install.sh
 
-Installs hippocampus from the current source checkout into the active Python
+Installs hippos from the current source checkout into the active Python
 environment as an editable package, including dev and repomap dependencies.
-Also installs the llmgateway dependency, preferring ../llmgateway when present.
+Also installs the Python llmgateway dependency from PyPI
+(default: seemseam-llmgateway>=0.1.2).
 Writes ~/.llmgateway/config.yaml for provider/API/concurrency settings and
-LLMGateway strong/weak model settings, plus ~/.hippocampus/config.yaml for
-Hippo task-tier routing.
-If you skip URL or API key, install still writes the Hippo task-tier config and
+LLMGateway strong/weak model settings, plus ~/.hippos/config.yaml for
+Hippos task-tier routing.
+If you skip URL or API key, install still writes the Hippos task-tier config and
 prints the manual gateway config path.
-Existing llmgateway, Hippo, or Architec configs are reused as defaults.
+Existing llmgateway, Hippos, or Architec configs are reused as defaults.
 EOF
   exit 0
 fi
@@ -345,19 +327,19 @@ python3 -m pip install --upgrade pip
 install_llmgateway
 python3 -m pip install -e ".[dev,repomap]"
 
-gateway_provider_type="${gateway_provider_type:-${hippocampus_llm_provider_type:-glm}}"
-gateway_api_style="${gateway_api_style:-${hippocampus_llm_api_style:-openai_responses}}"
-gateway_base_url="${gateway_base_url:-${hippocampus_llm_base_url:-}}"
-gateway_api_key="${gateway_api_key:-${hippocampus_llm_api_key:-}}"
-gateway_max_concurrent="${gateway_max_concurrent:-${hippocampus_llm_max_concurrent:-20}}"
-gateway_model_map_json="${gateway_model_map_json:-${hippocampus_llm_model_map_json:-}}"
+gateway_provider_type="${gateway_provider_type:-${hippos_llm_provider_type:-glm}}"
+gateway_api_style="${gateway_api_style:-${hippos_llm_api_style:-openai_responses}}"
+gateway_base_url="${gateway_base_url:-${hippos_llm_base_url:-}}"
+gateway_api_key="${gateway_api_key:-${hippos_llm_api_key:-}}"
+gateway_max_concurrent="${gateway_max_concurrent:-${hippos_llm_max_concurrent:-20}}"
+gateway_model_map_json="${gateway_model_map_json:-${hippos_llm_model_map_json:-}}"
 gateway_retry_max="${gateway_retry_max:-3}"
 gateway_timeout="${gateway_timeout:-30}"
 
-hippocampus_llm_weak_model="${hippocampus_llm_weak_model:-${hippocampus_llm_model:-gpt-5.4}}"
-hippocampus_llm_strong_model="${hippocampus_llm_strong_model:-gpt-5.4}"
-hippocampus_llm_weak_reasoning_effort="${hippocampus_llm_weak_reasoning_effort:-low}"
-hippocampus_llm_strong_reasoning_effort="${hippocampus_llm_strong_reasoning_effort:-high}"
+hippos_llm_weak_model="${hippos_llm_weak_model:-${hippos_llm_model:-gpt-5.4}}"
+hippos_llm_strong_model="${hippos_llm_strong_model:-gpt-5.4}"
+hippos_llm_weak_reasoning_effort="${hippos_llm_weak_reasoning_effort:-low}"
+hippos_llm_strong_reasoning_effort="${hippos_llm_strong_reasoning_effort:-high}"
 
 load_existing_gateway_config
 if is_interactive; then
@@ -370,13 +352,13 @@ if is_interactive; then
     prompt_with_default gateway_retry_max "LLMGateway retry max [$gateway_retry_max]: " "$gateway_retry_max"
     prompt_with_default gateway_timeout "LLMGateway timeout [$gateway_timeout]: " "$gateway_timeout"
   fi
-  prompt_with_default hippocampus_llm_weak_model "LLMGateway weak model [$hippocampus_llm_weak_model]: " "$hippocampus_llm_weak_model"
-  prompt_with_default hippocampus_llm_strong_model "LLMGateway strong model [$hippocampus_llm_strong_model]: " "$hippocampus_llm_strong_model"
-  prompt_with_default hippocampus_llm_weak_reasoning_effort "LLMGateway weak reasoning effort [$hippocampus_llm_weak_reasoning_effort]: " "$hippocampus_llm_weak_reasoning_effort"
-  prompt_with_default hippocampus_llm_strong_reasoning_effort "LLMGateway strong reasoning effort [$hippocampus_llm_strong_reasoning_effort]: " "$hippocampus_llm_strong_reasoning_effort"
+  prompt_with_default hippos_llm_weak_model "LLMGateway weak model [$hippos_llm_weak_model]: " "$hippos_llm_weak_model"
+  prompt_with_default hippos_llm_strong_model "LLMGateway strong model [$hippos_llm_strong_model]: " "$hippos_llm_strong_model"
+  prompt_with_default hippos_llm_weak_reasoning_effort "LLMGateway weak reasoning effort [$hippos_llm_weak_reasoning_effort]: " "$hippos_llm_weak_reasoning_effort"
+  prompt_with_default hippos_llm_strong_reasoning_effort "LLMGateway strong reasoning effort [$hippos_llm_strong_reasoning_effort]: " "$hippos_llm_strong_reasoning_effort"
 fi
 
-write_hippo_config
+write_hippos_config
 
 if [[ -z "$gateway_base_url" || -z "$gateway_api_key" ]]; then
   print_manual_config_hint
@@ -387,4 +369,4 @@ write_gateway_config
 validate_llm_config
 
 echo "Saved LLMGateway config to $LLMGATEWAY_CONFIG_PATH"
-echo "Saved Hippo LLM config to $LLM_CONFIG_PATH"
+echo "Saved Hippos LLM config to $LLM_CONFIG_PATH"
