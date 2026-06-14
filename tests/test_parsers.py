@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from hippos.parsers.lang_map import (
     EXTENSION_MAP,
     detect_file_language,
@@ -132,6 +134,7 @@ class TestQueryLoader:
 # ── ts_extract tests ──
 
 from hippos.parsers.ts_extract import (
+    _get_parser_and_language,
     _normalize_query_for_runtime,
     extract_definitions,
     extract_tags,
@@ -144,6 +147,30 @@ class TestTsExtract:
         fixed = _normalize_query_for_runtime("javascript", q)
         assert "(function_expression)" in fixed
         assert "(function)]" not in fixed
+
+    def test_normalize_javascript_multiline_legacy_function_node(self):
+        q = "(function\n  name: (identifier) @name.definition.function)"
+        fixed = _normalize_query_for_runtime("javascript", q)
+        assert "(function_expression\n" in fixed
+        assert "(function\n" not in fixed
+
+    def test_packaged_queries_compile_for_available_tree_sitter_languages(self, queries_dir):
+        tree_sitter = pytest.importorskip("tree_sitter")
+
+        failures = []
+        for query_path in sorted(queries_dir.glob("*-tags.scm")):
+            lang = query_path.name.removesuffix("-tags.scm")
+            parser, ts_lang = _get_parser_and_language(lang)
+            if parser is None or ts_lang is None:
+                continue
+            query_scm = load_query(queries_dir, lang)
+            query_scm = _normalize_query_for_runtime(lang, query_scm or "")
+            try:
+                tree_sitter.Query(ts_lang, query_scm)
+            except Exception as exc:
+                failures.append(f"{lang}: {type(exc).__name__}: {exc}")
+
+        assert failures == []
 
     def test_extract_from_python_file(self, tmp_path, queries_dir):
         """Extract tags from a simple Python file."""

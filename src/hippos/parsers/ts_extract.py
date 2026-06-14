@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -12,9 +13,10 @@ from .query_loader import load_query
 def _normalize_query_for_runtime(lang: str, query_scm: str) -> str:
     """Patch known legacy query/node mismatches for current parser backend."""
     # Legacy javascript tags use "(function)" while newer grammar uses
-    # "(function_expression)". Keep existing query files usable.
-    if lang == "javascript" and "(function)" in query_scm:
-        query_scm = query_scm.replace("(function)", "(function_expression)")
+    # "(function_expression)". Keep existing query files usable, including
+    # multiline node forms like "(function\n  name: ...)".
+    if lang == "javascript":
+        query_scm = re.sub(r"\(function(?=[\s)\]])", "(function_expression", query_scm)
     return query_scm
 
 
@@ -179,7 +181,7 @@ def extract_tags(
 
     try:
         captures = _query_captures(ts_lang, query_scm, root_node)
-    except (AttributeError, TypeError):
+    except Exception:
         return _extract_with_language_pack_process(fname, rel_fname, lang, code)
 
     tags = []
